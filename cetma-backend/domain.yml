@@ -1,0 +1,141 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - mood_great
+  - mood_unhappy
+  - bot_challenge
+  - help_request
+  - thank_you
+  - ask_name
+  - ask_bot_function
+  - request_appointment
+  - ask_opening_hours
+  - ask_where_department
+  - ask_where_italo
+  - ask_where_pluto_meeting
+  - ask_delivery_info
+  - ask_cosa_sai_fare
+
+
+responses:
+  utter_greet:
+  - text: "Ciao! Come posso aiutarti oggi?"
+  
+  utter_default:
+  - text: "Mi dispiace, non ho capito. Puoi ripetere?"
+
+  utter_goodbye:
+  - text: "Arrivederci! Alla prossima!"
+
+  utter_affirm:
+  - text: "Ottimo!"
+
+  utter_deny:
+  - text: "Capito, nessun problema."
+
+  utter_cheer_up:
+  - text: "Ecco qualcosa per tirarti su:"
+    image: "https://thumbs.dreamstime.com/b/cavallo-con-un-senso-di-umore-24139145.jpg"
+
+  utter_did_that_help:
+  - text: "Questo ti ha aiutato?"
+
+  utter_happy:
+  - text: "Fantastico, continua così!"
+
+  utter_iamabot:
+  - text: "Sono l'assistente virtuale del CETMA."
+
+  utter_help:
+  - text: "Certo! Posso aiutarti con informazioni, rispondere a domande o semplicemente fare due chiacchiere."
+
+  utter_thank_you:
+  - text: "Prego! Fammi sapere se posso aiutarti ancora."
+
+  utter_ask_name:
+  - text: "Mi chiamo Assistente Rasa, Qual è il tuo nome?"
+
+  utter_bot_function:
+  - text: "Sono qui per aiutarti con qualsiasi domanda o compito."
+
+  utter_request_appointment:
+  - text: "Per quale area vuoi prenotare un appuntamento?"
+
+  utter_confirm_appointment:
+  - text: "Perfetto, hai scelto l'area {area}. Vuoi confermare?"
+
+  utter_ask_area:
+  - text: "Per quale area vuoi prenotare un appuntamento?"
+
+  utter_opening_hours:
+  - text: "Gli orari di apertura del CETMA sono i seguenti: lunedì - venerdì, 09:00 - 17:00."
+
+  utter_where_department:
+  - text: "Il Dipartimento NED è al secondo piano della sede del CETMA. Giunti al piano seguire la segnaletica fisica per raggiungere gli uffici richiesti."
+
+  utter_where_italo:
+  - text: "L'ufficio del dott. Italo Spada è al secondo piano della sede del CETMA presso il Dipartimento di nuove tecnologie e Design. Giunti al Piano chiedere informazioni alla reception."
+
+  utter_where_pluto_meeting:
+  - text: "Il meeting si tiene al terzo piano della sede del CETMA. Giunti al Piano seguire la segnaletica verso la sala 'Angelo Marino'."
+
+  utter_delivery_info:
+  - text: "I pacchi possono essere consegnati presso la reception del CETMA dal lunedì al venerdì dalle ore 08:00 alle ore 17:00."
+
+  utter_cosa_sai_fare:
+  - text: "Sono un chatbot e posso guidarti all'interno della sede del CETMA e darti varie informazioni sul centro di ricerca."
+
+
+
+slots:
+  mood:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_text
+
+
+
+  user_name:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_text
+
+  user_request:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+
+actions:
+  - action_greet_user
+  - utter_greet
+  - utter_goodbye
+  - utter_affirm
+  - utter_deny
+  - utter_cheer_up
+  - utter_did_that_help
+  - utter_happy
+  - utter_iamabot
+  - utter_help
+  - utter_thank_you
+  - utter_ask_name
+  - utter_bot_function
+  - utter_request_appointment
+  - utter_opening_hours
+  - utter_where_department
+  - utter_where_italo
+  - utter_where_pluto_meeting
+  - utter_delivery_info
+  - utter_cosa_sai_fare
+
+

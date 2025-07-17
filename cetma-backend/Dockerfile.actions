@@ -1,0 +1,11 @@
+FROM rasa/rasa-sdk:3.5.0
+
+USER root
+
+COPY ./actions /app/actions
+WORKDIR /app/actions
+
+# Se usi librerie esterne, altrimenti rimuovi
+RUN [ -f requirements.txt ] && pip install --no-cache-dir -r requirements.txt || echo "no requirements"
+
+CMD ["python", "-m", "rasa_sdk", "--actions", "actions"]

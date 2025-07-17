@@ -1,0 +1,155 @@
+version: "3.1"
+
+nlu:
+- intent: greet
+  examples: |
+    - ciao
+    - salve
+    - buongiorno
+    - hey
+    - come va?
+    - ehi, come stai?
+    - buon pomeriggio
+
+- intent: goodbye
+  examples: |
+    - arrivederci
+    - ci vediamo
+    - addio
+    - buona giornata
+    - buona serata
+    - a presto
+    - ci sentiamo dopo
+
+- intent: affirm
+  examples: |
+    - sì
+    - certo
+    - esatto
+    - confermo
+    - va bene
+    - assolutamente sì
+
+- intent: deny
+  examples: |
+    - no
+    - assolutamente no
+    - non credo
+    - non voglio
+    - non mi piace
+    - non va bene
+
+- intent: mood_great
+  examples: |
+    - sto bene
+    - alla grande
+    - fantastico
+    - perfetto
+    - sto benissimo
+    - sono felice
+
+- intent: mood_unhappy
+  examples: |
+    - sono triste
+    - non mi sento bene
+    - è una giornata pessima
+    - sono giù di morale
+    - non va bene oggi
+    - sono arrabbiato
+
+- intent: bot_challenge
+  examples: |
+    - sei un bot?
+    - sei una persona vera?
+    - sei reale?
+    - sei umano?
+    - sto parlando con un robot?
+    - chi sei?
+
+- intent: help_request
+  examples: |
+    - mi puoi aiutare?
+    - ho bisogno di aiuto
+    - aiutami per favore
+    - cosa puoi fare?
+    - puoi darmi una mano?
+
+- intent: thank_you
+  examples: |
+    - grazie
+    - ti ringrazio
+    - grazie mille
+    - apprezzo molto
+    - sei gentilissimo
+
+- intent: ask_name
+  examples: |
+    - come ti chiami?
+    - qual è il tuo nome?
+    - posso sapere il tuo nome?
+
+- intent: ask_bot_function
+  examples: |
+    - cosa sai fare?
+    - a cosa servi?
+    - qual è il tuo scopo?
+    - che tipo di bot sei?
+    - come puoi aiutarmi?
+    - chi sei?  # 👈 Spostato qui da ask_name
+
+- intent: request_appointment
+  examples: |
+    - Voglio prenotare un appuntamento
+    - Mi serve un appuntamento
+    - Posso prenotare un appuntamento?
+    - Vorrei prenotare
+    - Devo fissare un appuntamento 
+
+- intent: ask_opening_hours
+  examples: |
+    - Quali sono gli orari di apertura?
+    - A che ora apri?
+    - A che ora chiudi?
+    - Quando posso venire?
+    - Quali sono gli orari di apertura del CETMA? 
+
+- intent: ask_where_department
+  examples: |
+    - Dove si trova il Dipartimento NED?
+    - Dove posso trovare il Dipartimento di Nuove Tecnologie e Design del CETMA?
+    - Dove si trova il Dipartimento di Nuove Tecnologie e Design?
+    - Dove si trova il Dipartimento NED del CETMA?
+
+- intent: ask_where_italo
+  examples: |
+    - Dove posso trovare il dott. Italo Spada?
+    - Dove posso trovare il dott. Italo Spada, avrei un appuntamento?
+    - Dove posso trovare il dott. Spada??
+    - Dove posso trovare Italo Spada??
+    - Dove si trova il dott. Italo Spada?
+    - Dove si trova l'ufficio del dott. Italo Spada, avrei un appuntamento?
+
+- intent: ask_where_pluto_meeting
+  examples: |
+    - Dove si tiene il meeting internazionale del progetto europeo Pluto?
+    - Dove si trova la sala del meeting internazionale del progetto europeo Pluto?
+    - Dove si trova la sala del meeting internazionale del progetto Pluto?
+    - A quale piano si tiene il meeting internazionale del progetto Pluto?
+    - A quale piano si tiene il meeting internazionale del progetto europeo Pluto?
+
+- intent: ask_delivery_info
+  examples: |
+    - Sono un corriere, in quali giorni si possono consegnare dei pacchi e chi è il referente per la firma di avvenuta consegna?
+    - Quali sono gli orari di consegna dei pacchi?
+    - Dove posso consegnare dei pacchi?
+    - Dove posso consegnare i pacchi e chi è il referente per la firma di avvenuta consegna?
+    - Quando posso consegnare i pacchi e chi è il referente per la firma di avvenuta consegna?
+
+- intent: ask_cosa_sai_fare
+  examples: |
+    - Come puoi aiutarmi?
+    - Cosa sai fare?
+    - Cosa puoi fare?
+    - Come puoi essere d'aiuto?
+    - A cosa servi?
+

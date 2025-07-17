@@ -1,0 +1,43 @@
+# Ambiente virtuale
+venv/
+.env/
+*.env
+
+# File di log e temporanei
+*.log
+*.pid
+*.pyc
+__pycache__/
+*.pyo
+*.swp
+
+# File di sistema
+.DS_Store
+Thumbs.db
+*.bak
+*.tmp
+
+# Modelli addestrati
+models/
+*.tar.gz
+
+# File di cache
+.rasa/cache
+.cache/
+.pytest_cache/
+rasa.db
+instances/
+.lock
+
+# File di configurazione dell'IDE
+.idea/
+.vscode/
+*.iml
+
+# File di dipendenze installate
+node_modules/
+package-lock.json
+yarn.lock
+
+# Backup creati dagli editor di testo
+*.~*

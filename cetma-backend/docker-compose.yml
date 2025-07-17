@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  rasa:
+    build:
+      context: .
+      dockerfile: Dockerfile.rasa
+    image: cetma-rasa-bot
+    container_name: rasa-chatbot-prototype
+    ports:
+      - "8099:5005"
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data            # Consigliato: così puoi aggiornare nlu/stories/rules senza rebuild
+      - ./config:/app/config        # Consigliato: anche il config.yml deve essere visibile
+      - ./credentials.yml:/app/credentials.yml  # Consigliato: se usi canali
+      - ./endpoints.yml:/app/endpoints.yml      # Così rasa sa dove trovare le actions
+
+  action_server:
+    build:
+      context: .
+      dockerfile: Dockerfile.actions
+    image: cetma-action-server
+    container_name: rasa-action-server-cetma
+    volumes:
+      - ./actions:/app/actions
+    ports:
+      - "5055:5055"
+    restart: always
+    entrypoint: ["python", "-m", "rasa_sdk", "--actions", "actions"]
+

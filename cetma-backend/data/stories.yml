@@ -1,0 +1,62 @@
+version: "3.1"
+
+stories:
+
+- story: Saluto e richiesta di aiuto
+  steps:
+    - intent: greet
+    - action: utter_greet
+    - intent: help_request
+    - action: utter_help
+
+- story: Conferma prenotazione
+  steps:
+    - intent: request_appointment
+    - action: utter_request_appointment
+    - intent: affirm
+    - action: utter_confirm_appointment
+
+- story: Negazione dopo richiesta appuntamento
+  steps:
+    - intent: request_appointment
+    - action: utter_request_appointment
+    - intent: deny
+    - action: utter_deny
+
+- story: Utente ringrazia dopo aiuto
+  steps:
+    - intent: help_request
+    - action: utter_help
+    - intent: thank_you
+    - action: utter_thank_you
+
+- story: Dialogo con nome utente
+  steps:
+    - intent: ask_name
+    - action: utter_ask_name
+    - intent: affirm
+    - action: utter_affirm
+
+- story: Dialogo con umore positivo
+  steps:
+    - intent: mood_great
+    - action: utter_happy
+    - intent: thank_you
+    - action: utter_thank_you
+
+- story: Dialogo con umore negativo
+  steps:
+    - intent: mood_unhappy
+    - action: utter_cheer_up
+    - intent: thank_you
+    - action: utter_thank_you
+
+- story: Bot function richiesta e risposta
+  steps:
+    - intent: ask_bot_function
+    - action: utter_bot_function
+    - intent: help_request
+    - action: utter_help
+
+
+

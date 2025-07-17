@@ -1,0 +1,58 @@
+version: "3.1"
+
+rules:
+- rule: Greeting message
+  steps:
+    - intent: greet
+    - action: utter_greet
+
+- rule: Default answer
+  steps:
+    - intent: nlu_fallback
+    - action: utter_default
+
+- rule: Say goodbye anytime the user says goodbye
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- rule: Say 'I am a bot' anytime the user challenges
+  steps:
+  - intent: bot_challenge
+  - action: utter_iamabot
+
+- rule: Appointment request
+  steps:
+  - intent: request_appointment
+  - action: utter_request_appointment
+
+- rule: Ask for the opening hours
+  steps:
+  - intent: ask_opening_hours
+  - action: utter_opening_hours
+
+- rule: Ask where a department is
+  steps:
+  - intent: ask_where_department
+  - action: utter_where_department
+
+- rule: Ask where is Italo
+  steps:
+  - intent: ask_where_italo
+  - action: utter_where_italo
+
+- rule: Ask where the Pluto meeting room is
+  steps:
+  - intent: ask_where_pluto_meeting
+  - action: utter_where_pluto_meeting
+
+- rule: Ask for delivery information
+  steps:
+  - intent: ask_delivery_info
+  - action: utter_delivery_info
+
+- rule: Richiesta cosa sai fare
+  steps:
+    - intent: ask_cosa_sai_fare
+    - action: utter_cosa_sai_fare
+

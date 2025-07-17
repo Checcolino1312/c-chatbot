@@ -1,0 +1,31 @@
+# Ambiente virtuale Python (mai includerlo!)
+venv/
+
+# Cartelle IDE/editor
+.idea/
+.pycache__/
+__pycache__/
+*.pyc
+
+# Cartelle di test e sviluppo
+tests/
+*.log
+
+# Cache ed eventuali file nascosti inutili
+*.db
+*.DS_Store
+*.swp
+*~
+
+# Dataset grezzi o versioni temporanee
+*.tar.gz
+*.zip
+*.bak
+*.old
+
+# File git e repo locali
+.git/
+.gitignore
+
+# Altri file di sistema inutili
+.env
