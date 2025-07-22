@@ -18,6 +18,8 @@ services:
       - ./endpoints.yml:/app/endpoints.yml
       # Volume per il database delle prenotazioni
       - ./cetma_bookings.db:/app/cetma_bookings.db
+      # Directory per file esportati
+      - ./exports:/app/exports
     depends_on:
       - action_server
     environment:
@@ -35,16 +37,12 @@ services:
       - ./database.py:/app/database.py
       # Volume per il database delle prenotazioni
       - ./cetma_bookings.db:/app/cetma_bookings.db
+      # Directory per file esportati
+      - ./exports:/app/exports
+      # Script di esportazione
+      - ./export_bookings_docker.py:/app/export_bookings_docker.py
     ports:
       - "5055:5055"
     restart: unless-stopped
     environment:
       - PYTHONPATH=/app
-
-  # Opzionale: Duckling per entity extraction
-  # duckling:
-  #   image: rasa/duckling:latest
-  #   container_name: rasa-duckling-cetma
-  #   ports:
-  #     - "8000:8000"
-  #   restart: unless-stopped

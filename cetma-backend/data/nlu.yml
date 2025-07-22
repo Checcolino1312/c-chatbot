@@ -388,6 +388,19 @@ nlu:
     - dimmi una barzelletta
     - canta una canzone
 
+- intent: new_booking
+  examples: |
+    - nuova prenotazione
+    - fai una nuova prenotazione
+    - altra prenotazione
+    - prenota di nuovo
+    - voglio prenotare ancora
+    - prenotazione diversa
+    - reset prenotazione
+    - ricomincia prenotazione
+    - new booking
+    - fresh booking
+
 lookup:
   - name: names
     examples: |
