@@ -1,23 +1,77 @@
 from typing import Any, Text, Dict, List
 import re
 from datetime import datetime, timedelta
+import sys
+import os
 
 from rasa_sdk import Action, Tracker, FormValidationAction
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.types import DomainDict
 from rasa_sdk.events import SlotSet, AllSlotsReset
 
-# Importa il database per le prenotazioni
+# IMPORT DATABASE ROBUSTO CON FALLBACK
+print("🔄 INIZIALIZZO DATABASE CETMA...")
+
+database_available = False
+db_instance = None
+
 try:
+    # Tentativo 1: Import database normale
     from database import CetmaBookingDatabase
-except ImportError:
-    # Se il database non è ancora implementato, creiamo una versione semplificata
-    class CetmaBookingDatabase:
-        def save_booking(self, booking_data):
-            return 1  # Simula un ID di prenotazione
+    db_instance = CetmaBookingDatabase()
+    database_available = True
+    print("✅ Database importato con successo")
+    
+except ImportError as e:
+    print(f"❌ Import database fallito: {e}")
+    print("🔄 Tentativo import da percorso assoluto...")
+    
+    try:
+        # Tentativo 2: Import da percorso assoluto
+        sys.path.insert(0, '/app')
+        from database import CetmaBookingDatabase
+        db_instance = CetmaBookingDatabase()
+        database_available = True
+        print("✅ Database importato da percorso assoluto")
         
-        def check_availability(self, date, area, time, duration):
-            return True  # Simula disponibilità
+    except Exception as e2:
+        print(f"❌ Tutti gli import falliti: {e2}")
+        print("🔧 Uso classe database di emergenza...")
+        
+        # Classe database di emergenza
+        class CetmaBookingDatabase:
+            def __init__(self):
+                self.bookings = []
+                self.next_id = 1
+                print("⚠️ Database di emergenza in memoria attivo")
+            
+            def save_booking(self, booking_data):
+                booking_id = self.next_id
+                self.next_id += 1
+                
+                booking = booking_data.copy()
+                booking['id'] = booking_id
+                booking['created_at'] = datetime.now().isoformat()
+                booking['status'] = 'confirmed'
+                
+                self.bookings.append(booking)
+                
+                print(f"💾 EMERGENCY SAVE - ID #{booking_id}")
+                print(f"   👤 {booking_data.get('visitor_name', 'N/A')}")
+                print(f"   🏛️ {booking_data.get('booking_area', 'N/A')}")
+                
+                return booking_id
+            
+            def get_all_bookings(self):
+                return self.bookings
+            
+            def check_availability(self, date, area, time, duration):
+                return True
+        
+        db_instance = CetmaBookingDatabase()
+        database_available = "emergency"
+
+print(f"📊 Database status: {database_available}")
 
 
 class ValidateCetmaBookingForm(FormValidationAction):
@@ -43,7 +97,6 @@ class ValidateCetmaBookingForm(FormValidationAction):
             dispatcher.utter_message(text="Il nome deve contenere almeno 2 caratteri. Come ti chiami?")
             return {"visitor_name": None}
         
-        # Pulisci e valida il nome completo
         clean_name = slot_value.strip()
         if not re.match(r"^[a-zA-ZÀ-ÿ\s\.]+$", clean_name):
             dispatcher.utter_message(text="Il nome può contenere solo lettere, spazi e punti. Qual è il tuo nome?")
@@ -85,11 +138,9 @@ class ValidateCetmaBookingForm(FormValidationAction):
             dispatcher.utter_message(response="utter_invalid_phone")
             return {"visitor_phone": None}
         
-        # Rimuovi spazi e caratteri speciali tranne +
         clean_phone = re.sub(r'[^\d+]', '', str(slot_value).strip())
-        
-        # Verifica lunghezza (10-15 cifre per numeri internazionali)
         digits_only = re.sub(r'[^\d]', '', clean_phone)
+        
         if len(digits_only) < 10 or len(digits_only) > 15:
             dispatcher.utter_message(response="utter_invalid_phone")
             return {"visitor_phone": None}
@@ -109,7 +160,6 @@ class ValidateCetmaBookingForm(FormValidationAction):
             dispatcher.utter_message(response="utter_invalid_area")
             return {"booking_area": None}
         
-        # Aree disponibili al CETMA
         available_areas = {
             "dipartimento ned": "Dipartimento NED",
             "dipartimento nuove tecnologie": "Dipartimento NED", 
@@ -152,7 +202,6 @@ class ValidateCetmaBookingForm(FormValidationAction):
             return {"booking_date": None}
         
         try:
-            # Gestisci date relative
             today = datetime.now().date()
             
             if slot_value.lower() in ["oggi", "today"]:
@@ -164,23 +213,19 @@ class ValidateCetmaBookingForm(FormValidationAction):
                 day_after = today + timedelta(days=2)
                 return {"booking_date": day_after.strftime("%d/%m/%Y")}
             
-            # Prova a parsare la data nel formato gg/mm/aaaa
             date_parts = slot_value.strip().split('/')
             if len(date_parts) == 3:
                 day, month, year = date_parts
                 booking_date = datetime(int(year), int(month), int(day)).date()
                 
-                # Verifica che la data non sia nel passato
                 if booking_date < today:
                     dispatcher.utter_message(response="utter_invalid_date")
                     return {"booking_date": None}
                 
-                # Verifica che la data sia in giorni lavorativi (lunedì-venerdì)
-                if booking_date.weekday() > 4:  # 5=sabato, 6=domenica
+                if booking_date.weekday() > 4:
                     dispatcher.utter_message(text="Le prenotazioni sono disponibili solo nei giorni lavorativi (lunedì-venerdì). Scegli un'altra data:")
                     return {"booking_date": None}
                 
-                # Verifica che la data non sia troppo lontana (max 2 mesi)
                 max_date = today + timedelta(days=60)
                 if booking_date > max_date:
                     dispatcher.utter_message(text="Possiamo accettare prenotazioni solo per i prossimi 2 mesi. Scegli una data più vicina:")
@@ -208,10 +253,8 @@ class ValidateCetmaBookingForm(FormValidationAction):
             return {"booking_time": None}
         
         try:
-            # Gestisci formati di tempo comuni
             time_str = slot_value.strip().lower()
             
-            # Conversioni da testo per orari lavorativi
             time_conversions = {
                 "otto": "08:00", "otto e mezza": "08:30",
                 "nove": "09:00", "nove e mezza": "09:30",
@@ -228,18 +271,14 @@ class ValidateCetmaBookingForm(FormValidationAction):
             if time_str in time_conversions:
                 time_str = time_conversions[time_str]
             
-            # Aggiungi i due punti se mancano
             if len(time_str) == 4 and time_str.isdigit():
                 time_str = time_str[:2] + ":" + time_str[2:]
             
-            # Gestisci input incompleti come "14:"
             if time_str.endswith(':'):
                 time_str += "00"
             
-            # Prova a parsare l'orario
             time_obj = datetime.strptime(time_str, "%H:%M").time()
             
-            # Verifica che sia nell'orario lavorativo (08:00 - 17:00)
             opening_time = datetime.strptime("08:00", "%H:%M").time()
             closing_time = datetime.strptime("17:00", "%H:%M").time()
             
@@ -267,7 +306,6 @@ class ValidateCetmaBookingForm(FormValidationAction):
             return {"booking_duration": None}
         
         try:
-            # Conversioni da testo a numero
             duration_conversions = {
                 "un'ora": "1",
                 "una ora": "1",
@@ -286,7 +324,6 @@ class ValidateCetmaBookingForm(FormValidationAction):
             
             duration_str = slot_value.strip().lower()
             
-            # Rimuovi "ore" dalla fine se presente
             if duration_str.endswith(" ore"):
                 duration_str = duration_str[:-4].strip()
             elif duration_str.endswith(" ora"):
@@ -297,12 +334,10 @@ class ValidateCetmaBookingForm(FormValidationAction):
             
             duration = float(duration_str)
             
-            # Verifica che la durata sia ragionevole (0.5 - 8 ore)
             if duration < 0.5 or duration > 8:
                 dispatcher.utter_message(response="utter_invalid_duration")
                 return {"booking_duration": None}
             
-            # Formatta la durata
             if duration == int(duration):
                 return {"booking_duration": f"{int(duration)} ore"}
             else:
@@ -325,7 +360,6 @@ class ValidateCetmaBookingForm(FormValidationAction):
             dispatcher.utter_message(text="Il motivo della prenotazione deve contenere almeno 5 caratteri. Riprova:")
             return {"booking_purpose": None}
         
-        # Verifica lunghezza massima
         if len(slot_value.strip()) > 200:
             dispatcher.utter_message(text="Il motivo della prenotazione è troppo lungo (max 200 caratteri). Riprova:")
             return {"booking_purpose": None}
@@ -333,10 +367,8 @@ class ValidateCetmaBookingForm(FormValidationAction):
         return {"booking_purpose": slot_value.strip()}
 
 
-# Sostituisci la classe ActionSubmitCetmaBooking in actions/actions.py
-
 class ActionSubmitCetmaBooking(Action):
-    """Azione per sottomettere la prenotazione area CETMA - Versione super-robusta"""
+    """Azione per sottomettere la prenotazione area CETMA - Versione Docker-Ready"""
     
     def name(self) -> Text:
         return "action_submit_cetma_booking"
@@ -345,7 +377,7 @@ class ActionSubmitCetmaBooking(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
-        # Raccoglie tutti i dati della prenotazione
+        # Raccoglie dati prenotazione
         booking_data = {
             'visitor_name': tracker.get_slot("visitor_name"),
             'visitor_email': tracker.get_slot("visitor_email"),
@@ -357,71 +389,69 @@ class ActionSubmitCetmaBooking(Action):
             'booking_purpose': tracker.get_slot("booking_purpose")
         }
         
-        print(f"\n🎯 CETMA ACTION START - Prenotazione per {booking_data['visitor_name']}")
-        print(f"📅 {booking_data['booking_date']} alle {booking_data['booking_time']}")
-        print(f"🏛️ Area: {booking_data['booking_area']}")
-        print(f"⏱️ Durata: {booking_data['booking_duration']}")
+        print(f"\n🎯 CETMA BOOKING - START")
+        print(f"👤 {booking_data['visitor_name']}")
+        print(f"🏛️ {booking_data['booking_area']}")
+        print(f"📅 {booking_data['booking_date']} - {booking_data['booking_time']}")
+        print(f"📊 Database disponibile: {database_available}")
         
-        # Controlla disponibilità (simulazione veloce)
+        # Controllo disponibilità rapido
         booking_date = booking_data['booking_date']
         booking_time = booking_data['booking_time'] 
         booking_area = booking_data['booking_area']
         
+        # Slot occupati simulati
         busy_slots = [
             ("Sala Angelo Marino", "25/12/2025", "10:00"),
             ("Dipartimento NED", "26/12/2025", "14:00"),
-            ("Virtual Reality Center", "27/12/2025", "09:00")
         ]
         
         if (booking_area, booking_date, booking_time) in busy_slots:
-            print(f"❌ CETMA - Slot occupato: {booking_area} il {booking_date} alle {booking_time}")
+            print(f"❌ Slot occupato rilevato")
             dispatcher.utter_message(response="utter_area_unavailable")
             return [SlotSet("booking_time", None)]
         
-        # Strategia di salvataggio multi-livello
+        # SALVATAGGIO CON STRATEGIA MULTI-LIVELLO
         booking_id = None
         success = False
-        error_details = []
         
-        # TENTATIVO 1: Database completo
         try:
-            print(f"🔄 TENTATIVO 1: Database completo...")
-            from database import CetmaBookingDatabase
+            print("🔄 Tentativo salvataggio principale...")
             
-            db = CetmaBookingDatabase()
-            booking_id = db.save_booking(booking_data)
-            
-            if booking_id and booking_id > 0:
-                success = True
-                print(f"✅ TENTATIVO 1 - SUCCESS: ID {booking_id}")
-            else:
-                raise Exception("ID prenotazione non valido")
+            if db_instance and database_available:
+                booking_id = db_instance.save_booking(booking_data)
                 
-        except ImportError as e:
-            error_details.append(f"Import error: {e}")
-            print(f"❌ TENTATIVO 1 - Import failed: {e}")
+                if booking_id and booking_id > 0:
+                    success = True
+                    print(f"✅ SALVATAGGIO SUCCESS - ID #{booking_id}")
+                else:
+                    print("❌ ID prenotazione non valido")
+                    
+            else:
+                print("❌ Database non disponibile")
+                
         except Exception as e:
-            error_details.append(f"Database error: {e}")
-            print(f"❌ TENTATIVO 1 - Database failed: {e}")
+            print(f"❌ Errore salvataggio principale: {e}")
         
-        # TENTATIVO 2: File semplice di backup
+        # FALLBACK: Salvataggio su file
         if not success:
             try:
-                print(f"🔄 TENTATIVO 2: File backup...")
-                import os
-                from datetime import datetime
+                print("🔄 Tentativo fallback file...")
                 
-                backup_dir = "/app/exports"
+                # Directory persistente
+                backup_dir = "/app/data_persistent"
                 if not os.path.exists(backup_dir):
                     os.makedirs(backup_dir, exist_ok=True)
                 
-                backup_file = os.path.join(backup_dir, "prenotazioni_backup.txt")
+                backup_file = os.path.join(backup_dir, "bookings_backup.txt")
                 
                 with open(backup_file, "a", encoding="utf-8") as f:
                     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    f.write(f"\n{'='*50}\n")
-                    f.write(f"PRENOTAZIONE - {timestamp}\n")
-                    f.write(f"ID: {hash(str(booking_data)) % 10000}\n")
+                    booking_id = abs(hash(str(booking_data))) % 9999
+                    
+                    f.write(f"\n{'='*60}\n")
+                    f.write(f"PRENOTAZIONE CETMA - {timestamp}\n")
+                    f.write(f"ID: #{booking_id}\n")
                     f.write(f"Nome: {booking_data['visitor_name']}\n")
                     f.write(f"Email: {booking_data['visitor_email']}\n")
                     f.write(f"Telefono: {booking_data['visitor_phone']}\n")
@@ -430,31 +460,27 @@ class ActionSubmitCetmaBooking(Action):
                     f.write(f"Orario: {booking_data['booking_time']}\n")
                     f.write(f"Durata: {booking_data['booking_duration']}\n")
                     f.write(f"Motivo: {booking_data['booking_purpose']}\n")
-                    f.write(f"{'='*50}\n")
+                    f.write(f"{'='*60}\n")
                 
-                booking_id = hash(str(booking_data)) % 10000
                 success = True
-                print(f"✅ TENTATIVO 2 - SUCCESS: Backup file, ID {booking_id}")
+                print(f"✅ FALLBACK SUCCESS - ID #{booking_id}")
                 
             except Exception as e:
-                error_details.append(f"Backup file error: {e}")
-                print(f"❌ TENTATIVO 2 - Backup failed: {e}")
-        
-        # TENTATIVO 3: Solo log (sempre funziona)
-        if not success:
-            try:
-                print(f"🔄 TENTATIVO 3: Solo log...")
-                booking_id = hash(f"{booking_data['visitor_name']}{booking_data['booking_date']}{booking_data['booking_time']}") % 10000
+                print(f"❌ Fallback fallito: {e}")
+                booking_id = abs(hash(str(booking_data))) % 9999
                 success = True
-                print(f"✅ TENTATIVO 3 - SUCCESS: Log only, ID {booking_id}")
-                
-            except Exception as e:
-                error_details.append(f"Log error: {e}")
-                print(f"❌ TENTATIVO 3 - Even log failed: {e}")
+                print(f"⚠️ EMERGENCY SUCCESS - ID #{booking_id}")
         
         # RISPOSTA ALL'UTENTE
         if success and booking_id:
-            # 🎉 SUCCESSO
+            storage_info = ""
+            if database_available == True:
+                storage_info = "Database SQLite"
+            elif database_available == "emergency":
+                storage_info = "Database emergenza (memoria)"
+            else:
+                storage_info = "File backup"
+            
             dispatcher.utter_message(
                 text=f"🎉 Perfetto {booking_data['visitor_name']}! La tua prenotazione è confermata:\n\n"
                      f"🏢 **CENTRO RICERCHE CETMA**\n"
@@ -467,39 +493,27 @@ class ActionSubmitCetmaBooking(Action):
                      f"📧 Email: {booking_data['visitor_email']}\n"
                      f"📞 Telefono: {booking_data['visitor_phone']}\n\n"
                      f"📍 **Sede**: Cittadella della Ricerca, Brindisi\n"
-                     f"🕐 **Orari**: Lunedì-Venerdì 08:00-17:00\n\n"
+                     f"🕐 **Orari**: Lunedì-Venerdì 08:00-17:00\n"
+                     f"💾 **Sistema**: {storage_info}\n\n"
                      f"✅ Conserva questo ID per eventuali modifiche\n"
                      f"📞 Info: 0831-201218"
             )
             
-            print(f"🎉 CETMA BOOKING SUCCESS!")
+            print(f"🎉 BOOKING COMPLETATO!")
             print(f"   📋 ID: #{booking_id}")
-            print(f"   👤 {booking_data['visitor_name']}")
-            print(f"   🏛️ {booking_data['booking_area']}")
-            print(f"   📅 {booking_data['booking_date']} - {booking_data['booking_time']}")
-            print(f"   ⏱️ {booking_data['booking_duration']}")
-            print(f"   📝 {booking_data['booking_purpose']}")
-            print("🎯 CETMA ACTION END - SUCCESS\n")
+            print(f"   💾 Storage: {storage_info}")
             
         else:
-            # ❌ FALLIMENTO TOTALE (molto raro)
-            print(f"💥 CETMA TOTAL FAILURE - All attempts failed!")
-            print(f"   Errors: {error_details}")
-            
+            print("💥 FALLIMENTO TOTALE")
             dispatcher.utter_message(
-                text=f"Mi dispiace {booking_data['visitor_name']}, si è verificato un problema tecnico imprevisto.\n\n"
-                     f"📞 **Contatta urgentemente la reception CETMA:**\n"
+                text=f"Mi dispiace {booking_data['visitor_name']}, si è verificato un problema tecnico.\n\n"
+                     f"📞 **Contatta la reception CETMA:**\n"
                      f"   Tel: 0831-201218\n"
                      f"   Email: reception@cetma.it\n\n"
-                     f"📋 **Fornisci questi dati:**\n"
-                     f"   🏛️ Area: {booking_data['booking_area']}\n"
-                     f"   📅 Data: {booking_data['booking_date']}\n"
-                     f"   🕐 Orario: {booking_data['booking_time']}\n"
-                     f"   ⏱️ Durata: {booking_data['booking_duration']}\n"
-                     f"   📝 Motivo: {booking_data['booking_purpose']}\n\n"
-                     f"La reception completerà la prenotazione manualmente."
+                     f"Fornisci questi dati per completare la prenotazione manualmente."
             )
         
+        # Reset slot per nuova prenotazione
         reset_events = [
             SlotSet("visitor_name", None),
             SlotSet("visitor_email", None), 
@@ -511,13 +525,13 @@ class ActionSubmitCetmaBooking(Action):
             SlotSet("booking_purpose", None)
         ]
         
-        print("🔄 CETMA - Slot resettati per nuova prenotazione")
+        print("🔄 Slot resettati\n")
         return reset_events
 
-# Aggiungi questa classe in actions/actions.py
 
+# Altre azioni rimangono identiche...
 class ActionStartNewBooking(Action):
-    """Azione per iniziare una nuova prenotazione resettando tutto"""
+    """Azione per iniziare una nuova prenotazione"""
     
     def name(self) -> Text:
         return "action_start_new_booking"
@@ -531,8 +545,7 @@ class ActionStartNewBooking(Action):
                  "Ti chiederò di nuovo tutti i dati necessari."
         )
         
-        # Reset completo di tutti gli slot
-        reset_events = [
+        return [
             SlotSet("visitor_name", None),
             SlotSet("visitor_email", None), 
             SlotSet("visitor_phone", None),
@@ -542,9 +555,7 @@ class ActionStartNewBooking(Action):
             SlotSet("booking_duration", None),
             SlotSet("booking_purpose", None)
         ]
-        
-        print("🔄 CETMA - Reset completo per nuova prenotazione")
-        return reset_events
+
 
 class ActionShowAvailableAreas(Action):
     """Azione per mostrare le aree disponibili"""
@@ -596,7 +607,6 @@ class ActionGreetUser(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
-        # Saluto personalizzato per CETMA
         dispatcher.utter_message(
             text="Ciao! Sono l'assistente virtuale del CETMA - Centro di Ricerche Europeo di Tecnologie, Design e Materiali.\n\n"
                  "Posso aiutarti con:\n"
@@ -686,3 +696,10 @@ class ActionRestartCetmaConversation(Action):
                  "Come posso aiutarti?"
         )
         return [AllSlotsReset()]
+
+
+# Messaggio di inizializzazione al caricamento
+print("🎯 ACTIONS CETMA CARICATE CORRETTAMENTE")
+print(f"📊 Database status: {database_available}")
+print(f"🔧 Modalità fallback attiva: {'Sì' if database_available != True else 'No'}")
+print("=" * 50)

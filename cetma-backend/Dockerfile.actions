@@ -1,21 +1,40 @@
+# Dockerfile semplificato per risolvere problemi di avvio
 FROM rasa/rasa-sdk:3.5.0
 
+# Lavora come root per evitare problemi di permessi
 USER root
 
-# Copia i file necessari
+# Imposta directory di lavoro
+WORKDIR /app
+
+# Copia solo i file essenziali
 COPY ./actions /app/actions
 COPY ./database.py /app/database.py
 
-WORKDIR /app
+# Crea directory necessarie con permessi aperti
+RUN mkdir -p /app/data_persistent /app/exports && \
+    chmod 777 /app/data_persistent /app/exports
 
-# Installa dipendenze se presenti
-RUN [ -f actions/requirements.txt ] && pip install --no-cache-dir -r actions/requirements.txt || echo "no additional requirements"
+# Installa dipendenze se esistono
+RUN if [ -f actions/requirements.txt ]; then \
+        pip install --no-cache-dir -r actions/requirements.txt; \
+    else \
+        echo "No requirements.txt found"; \
+    fi
 
-# Imposta PYTHONPATH per permettere import del database
+# Imposta variabili ambiente
 ENV PYTHONPATH=/app
+ENV DATABASE_PATH=/app/data_persistent/cetma_bookings.db
+ENV PYTHONUNBUFFERED=1
 
-# Espone la porta per le actions
+# Test base per verificare che Python funzioni
+RUN python3 --version
+
+# Test import base (non critico se fallisce)
+RUN python3 -c "print('Python setup OK')" || echo "Warning: Python test failed"
+
+# Espone porta
 EXPOSE 5055
 
-# Comando corretto per avviare il server con le nostre actions
-CMD ["run", "python", "-m", "rasa_sdk", "--actions", "actions.actions", "--debug"]
+# Comando semplice per avviare
+CMD ["start", "--actions", "actions.actions", "--debug"]
