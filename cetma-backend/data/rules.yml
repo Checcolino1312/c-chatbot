@@ -1,10 +1,11 @@
 version: "3.1"
 
 rules:
+# Regole esistenti
 - rule: Greeting message
   steps:
     - intent: greet
-    - action: utter_greet
+    - action: action_greet_user
 
 - rule: Default answer
   steps:
@@ -56,3 +57,72 @@ rules:
     - intent: ask_cosa_sai_fare
     - action: utter_cosa_sai_fare
 
+- rule: Help request
+  steps:
+    - intent: help_request
+    - action: utter_help
+
+- rule: Thank you
+  steps:
+    - intent: thank_you
+    - action: utter_thank_you
+
+- rule: Ask name
+  steps:
+    - intent: ask_name
+    - action: utter_ask_name
+
+- rule: Bot function
+  steps:
+    - intent: ask_bot_function
+    - action: utter_bot_function
+
+# Nuove regole per prenotazione aree
+- rule: Attiva form prenotazione area CETMA
+  steps:
+  - intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+
+- rule: Sottometti form prenotazione quando completo
+  condition:
+  - active_loop: cetma_booking_form
+  steps:
+  - action: cetma_booking_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_submit_cetma_booking
+
+- rule: Mostra aree disponibili
+  steps:
+  - intent: ask_areas
+  - action: action_show_available_areas
+
+- rule: Interrompi form attivo
+  condition:
+  - active_loop: cetma_booking_form
+  steps:
+  - intent: stop
+  - action: action_deactivate_loop
+  - active_loop: null
+
+- rule: Gestisci affermazione
+  steps:
+  - intent: affirm
+  - action: utter_affirm
+
+- rule: Gestisci negazione
+  steps:
+  - intent: deny
+  - action: utter_deny
+
+- rule: Gestisci umore positivo
+  steps:
+  - intent: mood_great
+  - action: utter_happy
+
+- rule: Gestisci umore negativo
+  steps:
+  - intent: mood_unhappy
+  - action: utter_cheer_up

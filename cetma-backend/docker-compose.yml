@@ -6,15 +6,23 @@ services:
       context: .
       dockerfile: Dockerfile.rasa
     image: cetma-rasa-bot
-    container_name: rasa-chatbot-prototype
+    container_name: rasa-chatbot-cetma
     ports:
       - "8099:5005"
     volumes:
       - ./models:/app/models
-      - ./data:/app/data            # Consigliato: così puoi aggiornare nlu/stories/rules senza rebuild
-      - ./config:/app/config        # Consigliato: anche il config.yml deve essere visibile
-      - ./credentials.yml:/app/credentials.yml  # Consigliato: se usi canali
-      - ./endpoints.yml:/app/endpoints.yml      # Così rasa sa dove trovare le actions
+      - ./data:/app/data
+      - ./config.yml:/app/config.yml
+      - ./domain.yml:/app/domain.yml
+      - ./credentials.yml:/app/credentials.yml
+      - ./endpoints.yml:/app/endpoints.yml
+      # Volume per il database delle prenotazioni
+      - ./cetma_bookings.db:/app/cetma_bookings.db
+    depends_on:
+      - action_server
+    environment:
+      - RASA_DUCKLING_HTTP_URL=http://duckling:8000
+    restart: unless-stopped
 
   action_server:
     build:
@@ -24,8 +32,19 @@ services:
     container_name: rasa-action-server-cetma
     volumes:
       - ./actions:/app/actions
+      - ./database.py:/app/database.py
+      # Volume per il database delle prenotazioni
+      - ./cetma_bookings.db:/app/cetma_bookings.db
     ports:
       - "5055:5055"
-    restart: always
-    entrypoint: ["python", "-m", "rasa_sdk", "--actions", "actions"]
+    restart: unless-stopped
+    environment:
+      - PYTHONPATH=/app
 
+  # Opzionale: Duckling per entity extraction
+  # duckling:
+  #   image: rasa/duckling:latest
+  #   container_name: rasa-duckling-cetma
+  #   ports:
+  #     - "8000:8000"
+  #   restart: unless-stopped

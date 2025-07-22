@@ -1,6 +1,7 @@
 version: "3.1"
 
 intents:
+  # Intenti esistenti
   - greet
   - goodbye
   - affirm
@@ -19,9 +20,117 @@ intents:
   - ask_where_pluto_meeting
   - ask_delivery_info
   - ask_cosa_sai_fare
+  
+  # Nuovi intenti per prenotazione aree
+  - book_area
+  - ask_areas
+  - provide_name
+  - provide_email
+  - provide_phone
+  - provide_area
+  - provide_date
+  - provide_time
+  - provide_duration
+  - provide_purpose
+  - stop
 
+entities:
+  - name
+  - email
+  - phone
+  - area
+  - date
+  - time
+  - duration
+  - purpose
+
+slots:
+  # Slot esistenti
+  mood:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_text
+
+  user_name:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_text
+
+  user_request:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+
+  # Nuovi slot per prenotazione aree
+  visitor_name:
+    type: text
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: cetma_booking_form
+        requested_slot: visitor_name
+
+  visitor_email:
+    type: text
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: cetma_booking_form
+        requested_slot: visitor_email
+
+  visitor_phone:
+    type: text
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: cetma_booking_form
+        requested_slot: visitor_phone
+
+  booking_area:
+    type: text
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: cetma_booking_form
+        requested_slot: booking_area
+
+  booking_date:
+    type: text
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: cetma_booking_form
+        requested_slot: booking_date
+
+  booking_time:
+    type: text
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: cetma_booking_form
+        requested_slot: booking_time
+
+  booking_duration:
+    type: text
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: cetma_booking_form
+        requested_slot: booking_duration
+
+  booking_purpose:
+    type: text
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: cetma_booking_form
+        requested_slot: booking_purpose
 
 responses:
+  # Risposte esistenti
   utter_greet:
   - text: "Ciao! Come posso aiutarti oggi?"
   
@@ -29,7 +138,7 @@ responses:
   - text: "Mi dispiace, non ho capito. Puoi ripetere?"
 
   utter_goodbye:
-  - text: "Arrivederci! Alla prossima!"
+  - text: "Arrivederci! Per ulteriori informazioni contatta la reception CETMA al 0831-201218."
 
   utter_affirm:
   - text: "Ottimo!"
@@ -48,75 +157,98 @@ responses:
   - text: "Fantastico, continua così!"
 
   utter_iamabot:
-  - text: "Sono l'assistente virtuale del CETMA."
+  - text: "Sono l'assistente virtuale del CETMA - Centro di Ricerche Europeo di Tecnologie, Design e Materiali."
 
   utter_help:
-  - text: "Certo! Posso aiutarti con informazioni, rispondere a domande o semplicemente fare due chiacchiere."
+  - text: "Posso aiutarti con orientamento nella sede, prenotazione aree, informazioni su orari e servizi. Cosa ti serve?"
 
   utter_thank_you:
-  - text: "Prego! Fammi sapere se posso aiutarti ancora."
+  - text: "Prego! Se hai altre domande o vuoi prenotare un'area, sono qui per aiutarti."
 
   utter_ask_name:
-  - text: "Mi chiamo Assistente Rasa, Qual è il tuo nome?"
+  - text: "Mi chiamo Assistente CETMA. Qual è il tuo nome?"
 
   utter_bot_function:
-  - text: "Sono qui per aiutarti con qualsiasi domanda o compito."
+  - text: "Sono qui per aiutarti con informazioni CETMA e prenotazioni aree. Posso guidarti nella sede e fornirti tutti i dettagli necessari."
 
   utter_request_appointment:
-  - text: "Per quale area vuoi prenotare un appuntamento?"
+  - text: "Per prenotare un'area o fissare un appuntamento, posso aiutarti! Vuoi prenotare un'area specifica?"
 
   utter_confirm_appointment:
-  - text: "Perfetto, hai scelto l'area {area}. Vuoi confermare?"
+  - text: "Perfetto! Hai bisogno di prenotare {area}. Vuoi procedere con la prenotazione?"
 
   utter_ask_area:
-  - text: "Per quale area vuoi prenotare un appuntamento?"
+  - text: "Per quale area vuoi prenotare? Puoi dire 'mostra aree' per vedere quelle disponibili."
 
   utter_opening_hours:
-  - text: "Gli orari di apertura del CETMA sono i seguenti: lunedì - venerdì, 09:00 - 17:00."
+  - text: "Gli orari di apertura del CETMA sono: lunedì - venerdì, 08:00 - 17:00. La reception è disponibile per informazioni nello stesso orario."
 
   utter_where_department:
-  - text: "Il Dipartimento NED è al secondo piano della sede del CETMA. Giunti al piano seguire la segnaletica fisica per raggiungere gli uffici richiesti."
+  - text: "Il Dipartimento NED (Nuove Tecnologie e Design) si trova al secondo piano della sede CETMA. Giunti al piano, segui la segnaletica fisica per raggiungere gli uffici."
 
   utter_where_italo:
-  - text: "L'ufficio del dott. Italo Spada è al secondo piano della sede del CETMA presso il Dipartimento di nuove tecnologie e Design. Giunti al Piano chiedere informazioni alla reception."
+  - text: "L'ufficio del dott. Italo Spada si trova al secondo piano presso il Dipartimento NED. Una volta al piano, chiedi informazioni alla reception di piano."
 
   utter_where_pluto_meeting:
-  - text: "Il meeting si tiene al terzo piano della sede del CETMA. Giunti al Piano seguire la segnaletica verso la sala 'Angelo Marino'."
+  - text: "Il meeting del progetto europeo Pluto si tiene al terzo piano nella sala 'Angelo Marino'. Segui la segnaletica una volta al piano."
 
   utter_delivery_info:
-  - text: "I pacchi possono essere consegnati presso la reception del CETMA dal lunedì al venerdì dalle ore 08:00 alle ore 17:00."
+  - text: "I pacchi possono essere consegnati presso la reception CETMA dal lunedì al venerdì dalle 08:00 alle 17:00. La reception gestisce la firma per le consegne."
 
   utter_cosa_sai_fare:
-  - text: "Sono un chatbot e posso guidarti all'interno della sede del CETMA e darti varie informazioni sul centro di ricerca."
+  - text: "Sono l'assistente virtuale CETMA e posso:\n🗺️ Guidarti nella sede\n📋 Gestire prenotazioni aree\n🕐 Fornire info su orari\n📞 Dare contatti utili\n\nCosa ti serve?"
 
+  # Nuove risposte per prenotazione aree
+  utter_ask_visitor_name:
+  - text: "Perfetto! Iniziamo con la prenotazione. Come ti chiami?"
 
+  utter_ask_visitor_email:
+  - text: "Grazie {visitor_name}! Qual è la tua email per la conferma?"
 
-slots:
-  mood:
-    type: text
-    influence_conversation: true
-    mappings:
-      - type: from_text
+  utter_ask_visitor_phone:
+  - text: "Perfetto! Ora ho bisogno del tuo numero di telefono per contattarti se necessario."
 
+  utter_ask_booking_area:
+  - text: "Quale area del CETMA vorresti prenotare? (es: Dipartimento NED, Sala Angelo Marino, Laboratorio, Virtual Reality Center)"
 
+  utter_ask_booking_date:
+  - text: "Per quale data vorresti prenotare? (formato gg/mm/aaaa - solo giorni lavorativi)"
 
-  user_name:
-    type: text
-    influence_conversation: true
-    mappings:
-      - type: from_text
+  utter_ask_booking_time:
+  - text: "A che ora vorresti utilizzare l'area? (orario lavorativo 08:00-17:00)"
 
-  user_request:
-    type: text
-    influence_conversation: false
-    mappings:
-      - type: from_text
+  utter_ask_booking_duration:
+  - text: "Per quanto tempo ti serve l'area? (es: 1 ora, 2 ore, mezza giornata)"
 
-session_config:
-  session_expiration_time: 60
-  carry_over_slots_to_new_session: true
+  utter_ask_booking_purpose:
+  - text: "Qual è il motivo della prenotazione? (es: riunione, presentazione, ricerca)"
+
+  utter_invalid_email:
+  - text: "L'email inserita non è valida. Riprova con il formato corretto (es: nome@dominio.com)"
+
+  utter_invalid_phone:
+  - text: "Il numero di telefono deve avere almeno 10 cifre. Riprova."
+
+  utter_invalid_area:
+  - text: "L'area specificata non è disponibile. Digita 'mostra aree' per vedere quelle disponibili."
+
+  utter_invalid_date:
+  - text: "La data deve essere nel formato gg/mm/aaaa, in un giorno lavorativo (lun-ven) e non nel passato. Riprova."
+
+  utter_invalid_time:
+  - text: "L'orario deve essere nel formato hh:mm negli orari lavorativi (08:00-17:00). Riprova."
+
+  utter_invalid_duration:
+  - text: "La durata deve essere tra 0.5 e 8 ore. Specifica meglio (es: 1 ora, 2 ore, mezza giornata)."
+
+  utter_area_unavailable:
+  - text: "Mi dispiace, l'area selezionata non è disponibile per quella data e ora. Puoi scegliere un altro orario?"
+
+  utter_areas_list:
+  - text: "🏢 Aree disponibili CETMA:\n🔬 Dipartimento NED (2° piano)\n🎯 Sala Angelo Marino (3° piano)\n🧪 Laboratorio (piano terra)\n🥽 Virtual Reality Center (piano terra)\n🏢 Sala Riunioni (vari piani)\n📞 Reception (piano terra)\n\nQuale area ti interessa?"
 
 actions:
+  # Azioni esistenti
   - action_greet_user
   - utter_greet
   - utter_goodbye
@@ -137,5 +269,24 @@ actions:
   - utter_where_pluto_meeting
   - utter_delivery_info
   - utter_cosa_sai_fare
+  
+  # Nuove azioni per prenotazione aree
+  - validate_cetma_booking_form
+  - action_submit_cetma_booking
+  - action_show_available_areas
 
+forms:
+  cetma_booking_form:
+    required_slots:
+      - visitor_name
+      - visitor_email
+      - visitor_phone
+      - booking_area
+      - booking_date
+      - booking_time
+      - booking_duration
+      - booking_purpose
 
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

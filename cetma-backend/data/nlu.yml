@@ -1,6 +1,7 @@
 version: "3.1"
 
 nlu:
+# Intenti esistenti
 - intent: greet
   examples: |
     - ciao
@@ -10,6 +11,9 @@ nlu:
     - come va?
     - ehi, come stai?
     - buon pomeriggio
+    - buonasera
+    - saluti
+    - ehilà
 
 - intent: goodbye
   examples: |
@@ -20,6 +24,9 @@ nlu:
     - buona serata
     - a presto
     - ci sentiamo dopo
+    - ciao ciao
+    - alla prossima
+    - grazie e ciao
 
 - intent: affirm
   examples: |
@@ -29,6 +36,10 @@ nlu:
     - confermo
     - va bene
     - assolutamente sì
+    - si
+    - d'accordo
+    - perfetto
+    - corretto
 
 - intent: deny
   examples: |
@@ -38,6 +49,10 @@ nlu:
     - non voglio
     - non mi piace
     - non va bene
+    - negativo
+    - sbagliato
+    - non è corretto
+    - annulla
 
 - intent: mood_great
   examples: |
@@ -73,6 +88,8 @@ nlu:
     - aiutami per favore
     - cosa puoi fare?
     - puoi darmi una mano?
+    - aiuto
+    - supporto
 
 - intent: thank_you
   examples: |
@@ -81,6 +98,7 @@ nlu:
     - grazie mille
     - apprezzo molto
     - sei gentilissimo
+    - perfetto grazie
 
 - intent: ask_name
   examples: |
@@ -95,7 +113,6 @@ nlu:
     - qual è il tuo scopo?
     - che tipo di bot sei?
     - come puoi aiutarmi?
-    - chi sei?  # 👈 Spostato qui da ask_name
 
 - intent: request_appointment
   examples: |
@@ -103,7 +120,9 @@ nlu:
     - Mi serve un appuntamento
     - Posso prenotare un appuntamento?
     - Vorrei prenotare
-    - Devo fissare un appuntamento 
+    - Devo fissare un appuntamento
+    - appuntamento
+    - prenotazione appuntamento
 
 - intent: ask_opening_hours
   examples: |
@@ -111,7 +130,10 @@ nlu:
     - A che ora apri?
     - A che ora chiudi?
     - Quando posso venire?
-    - Quali sono gli orari di apertura del CETMA? 
+    - Quali sono gli orari di apertura del CETMA?
+    - orari
+    - orari di apertura
+    - quando è aperto
 
 - intent: ask_where_department
   examples: |
@@ -119,15 +141,19 @@ nlu:
     - Dove posso trovare il Dipartimento di Nuove Tecnologie e Design del CETMA?
     - Dove si trova il Dipartimento di Nuove Tecnologie e Design?
     - Dove si trova il Dipartimento NED del CETMA?
+    - dipartimento NED
+    - nuove tecnologie
 
 - intent: ask_where_italo
   examples: |
     - Dove posso trovare il dott. Italo Spada?
     - Dove posso trovare il dott. Italo Spada, avrei un appuntamento?
-    - Dove posso trovare il dott. Spada??
-    - Dove posso trovare Italo Spada??
+    - Dove posso trovare il dott. Spada?
+    - Dove posso trovare Italo Spada?
     - Dove si trova il dott. Italo Spada?
-    - Dove si trova l'ufficio del dott. Italo Spada, avrei un appuntamento?
+    - Dove si trova l'ufficio del dott. Italo Spada?
+    - Italo Spada
+    - dott. Spada
 
 - intent: ask_where_pluto_meeting
   examples: |
@@ -136,6 +162,8 @@ nlu:
     - Dove si trova la sala del meeting internazionale del progetto Pluto?
     - A quale piano si tiene il meeting internazionale del progetto Pluto?
     - A quale piano si tiene il meeting internazionale del progetto europeo Pluto?
+    - progetto Pluto
+    - meeting Pluto
 
 - intent: ask_delivery_info
   examples: |
@@ -144,6 +172,9 @@ nlu:
     - Dove posso consegnare dei pacchi?
     - Dove posso consegnare i pacchi e chi è il referente per la firma di avvenuta consegna?
     - Quando posso consegnare i pacchi e chi è il referente per la firma di avvenuta consegna?
+    - consegna pacchi
+    - corriere
+    - consegne
 
 - intent: ask_cosa_sai_fare
   examples: |
@@ -152,4 +183,231 @@ nlu:
     - Cosa puoi fare?
     - Come puoi essere d'aiuto?
     - A cosa servi?
+    - funzioni
+    - capacità
 
+# Nuovi intenti per prenotazione aree
+- intent: book_area
+  examples: |
+    - vorrei prenotare un'area
+    - voglio prenotare una sala
+    - posso prenotare un'area?
+    - prenotazione area
+    - ho bisogno di un'area
+    - prenotare uno spazio
+    - fare una prenotazione
+    - prenotazione area CETMA
+    - prenotare [sala riunioni](area)
+    - prenotazione per [laboratorio](area)
+    - area per [domani](date)
+    - prenotazione [dipartimento NED](area) per [14:00](time)
+    - ho bisogno della [sala Angelo Marino](area)
+    - vorrei prenotare il [Virtual Reality Center](area)
+    - prenota area
+    - prenotazione sala
+    - prenotazione spazio
+
+- intent: ask_areas
+  examples: |
+    - quali aree sono disponibili?
+    - che spazi posso prenotare?
+    - mostrami le aree
+    - elenco aree
+    - aree disponibili
+    - che sale ci sono?
+    - quali laboratori posso prenotare?
+    - spazi CETMA
+    - mostra aree
+    - aree
+    - sale disponibili
+
+- intent: provide_name
+  examples: |
+    - [Mario Rossi](name)
+    - mi chiamo [Luca](name)
+    - sono [Anna](name)
+    - il mio nome è [Giovanni](name)
+    - [Francesca](name)
+    - [Paolo Bianchi](name)
+    - [Maria](name)
+    - [Alessandro](name)
+    - [Dr. Italo Spada](name)
+    - [Prof. Maria Rossi](name)
+    - [Ing. Giuseppe Verdi](name)
+    - [Dott. Francesco Neri](name)
+
+- intent: provide_email
+  examples: |
+    - [mario.rossi@email.com](email)
+    - [luca.verdi@gmail.com](email)
+    - la mia email è [anna@yahoo.it](email)
+    - [giovanni.test@hotmail.com](email)
+    - [francesca.bianchi@libero.it](email)
+    - [paolo123@gmail.com](email)
+    - [ricercatore@cetma.it](email)
+    - [utente@università.it](email)
+    - [nome.cognome@azienda.it](email)
+
+- intent: provide_phone
+  examples: |
+    - [3401234567](phone)
+    - il mio numero è [3331234567](phone)
+    - [+39 340 123 4567](phone)
+    - [347-123-4567](phone)
+    - [0831-201218](phone)
+    - [340 123 4567](phone)
+    - [08311234567](phone)
+    - [329 123 4567](phone)
+
+- intent: provide_area
+  examples: |
+    - [dipartimento NED](area)
+    - [sala Angelo Marino](area)
+    - [laboratorio](area)
+    - [Virtual Reality Center](area)
+    - [sala riunioni](area)
+    - [reception](area)
+    - [VR center](area)
+    - [dipartimento nuove tecnologie](area)
+    - [sala meeting](area)
+    - [sala conferenze](area)
+    - [lab](area)
+    - [ufficio](area)
+    - [spazio comune](area)
+
+- intent: provide_date
+  examples: |
+    - [15/12/2025](date)
+    - per [domani](date)
+    - [lunedì](date)
+    - [questo lunedì](date)
+    - [il 20 dicembre](date)
+    - [20/12/2025](date)
+    - [oggi](date)
+    - [dopodomani](date)
+    - [martedì prossimo](date)
+    - [la prossima settimana](date)
+    - [mercoledì](date)
+    - [giovedì](date)
+    - [venerdì](date)
+
+- intent: provide_time
+  examples: |
+    - alle [09:00](time)
+    - [14:30](time)
+    - verso le [10](time)
+    - alle [dieci del mattino](time)
+    - [15:00](time)
+    - alle [due del pomeriggio](time)
+    - [08:30](time)
+    - [mattina](time)
+    - [pomeriggio](time)
+    - alle [undici](time)
+    - [16:00](time)
+    - [13:00](time)
+
+- intent: provide_duration
+  examples: |
+    - per [2 ore](duration)
+    - [un'ora](duration)
+    - [3 ore](duration)
+    - [mezza giornata](duration)
+    - [tutta la mattina](duration)
+    - [mezz'ora](duration)
+    - [quattro ore](duration)
+    - [giornata intera](duration)
+    - [1 ora](duration)
+    - [due ore](duration)
+    - [cinque ore](duration)
+    - [tutto il pomeriggio](duration)
+
+- intent: provide_purpose
+  examples: |
+    - [riunione di lavoro](purpose)
+    - [presentazione progetto](purpose)
+    - [meeting internazionale](purpose)
+    - [ricerca scientifica](purpose)
+    - [formazione](purpose)
+    - [conferenza](purpose)
+    - [workshop](purpose)
+    - [dimostrazione tecnica](purpose)
+    - [colloquio](purpose)
+    - [seminario](purpose)
+    - [corso di aggiornamento](purpose)
+    - [test VR](purpose)
+    - [esperimenti](purpose)
+    - [progetto europeo](purpose)
+    - [meeting aziendale](purpose)
+
+- intent: stop
+  examples: |
+    - stop
+    - basta
+    - ferma
+    - annulla tutto
+    - voglio smettere
+    - interrompi
+    - cancella prenotazione
+    - annulla
+
+lookup:
+  - name: names
+    examples: |
+      - Mario
+      - Luigi
+      - Giuseppe
+      - Francesco
+      - Antonio
+      - Marco
+      - Andrea
+      - Alessandro
+      - Matteo
+      - Lorenzo
+      - Gabriele
+      - Mattia
+      - Nicola
+      - Riccardo
+      - Davide
+      - Italo
+      - Spada
+      - Giulia
+      - Chiara
+      - Francesca
+      - Federica
+      - Sara
+      - Martina
+      - Valentina
+      - Stefania
+      - Paola
+      - Daniela
+      - Anna
+      - Maria
+      - Elena
+      - Silvia
+      - Rosa
+      - Dottore
+      - Professore
+      - Ingegnere
+      - Dr.
+      - Prof.
+      - Ing.
+      - Dott.
+
+  - name: areas
+    examples: |
+      - Dipartimento NED
+      - Dipartimento Nuove Tecnologie
+      - Dipartimento Design
+      - Sala Angelo Marino
+      - Sala Riunioni
+      - Sala Meeting
+      - Sala Conferenze
+      - Laboratorio
+      - Virtual Reality Center
+      - VR Center
+      - Reception
+      - Ufficio
+      - Spazio Comune
+      - Lab
+      - Sala
+      - Area

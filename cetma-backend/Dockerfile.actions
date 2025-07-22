@@ -2,10 +2,20 @@ FROM rasa/rasa-sdk:3.5.0
 
 USER root
 
+# Copia i file necessari
 COPY ./actions /app/actions
-WORKDIR /app/actions
+COPY ./database.py /app/database.py
 
-# Se usi librerie esterne, altrimenti rimuovi
-RUN [ -f requirements.txt ] && pip install --no-cache-dir -r requirements.txt || echo "no requirements"
+WORKDIR /app
 
-CMD ["python", "-m", "rasa_sdk", "--actions", "actions"]
+# Installa dipendenze se presenti
+RUN [ -f actions/requirements.txt ] && pip install --no-cache-dir -r actions/requirements.txt || echo "no additional requirements"
+
+# Imposta PYTHONPATH per permettere import del database
+ENV PYTHONPATH=/app
+
+# Espone la porta per le actions
+EXPOSE 5055
+
+# Comando corretto per avviare il server con le nostre actions
+CMD ["run", "python", "-m", "rasa_sdk", "--actions", "actions.actions", "--debug"]
