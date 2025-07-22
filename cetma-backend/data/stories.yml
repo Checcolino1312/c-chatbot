@@ -58,7 +58,40 @@ stories:
     - intent: help_request
     - action: utter_help
 
-# Nuove storie per prenotazione aree
+# Nuove storie per gestione migliorata
+- story: Richiesta aiuto prenotazione
+  steps:
+  - intent: greet
+  - action: action_greet_user
+  - intent: ask_help_booking
+  - action: action_help_booking
+  - intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+
+- story: Domanda fuori contesto
+  steps:
+  - intent: greet
+  - action: action_greet_user
+  - intent: out_of_scope
+  - action: action_out_of_scope
+  - intent: ask_areas
+  - action: action_show_available_areas
+
+- story: Non capisce come prenotare
+  steps:
+  - intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+  - intent: ask_help_booking
+  - action: action_help_booking
+  - action: action_deactivate_loop
+  - active_loop: null
+  - intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+
+# Storie per prenotazione aree
 - story: Prenotazione area CETMA completa
   steps:
   - intent: greet
@@ -74,6 +107,146 @@ stories:
     - requested_slot: visitor_email
   - slot_was_set:
     - visitor_email: "mario.rossi@università.it"
+  - slot_was_set:
+    - requested_slot: visitor_phone
+  - slot_was_set:
+    - visitor_phone: "3401234567"
+  - slot_was_set:
+    - requested_slot: booking_area
+  - slot_was_set:
+    - booking_area: "Dipartimento NED"
+  - slot_was_set:
+    - requested_slot: booking_date
+  - slot_was_set:
+    - booking_date: "20/12/2025"
+  - slot_was_set:
+    - requested_slot: booking_time
+  - slot_was_set:
+    - booking_time: "10:00"
+  - slot_was_set:
+    - requested_slot: booking_duration
+  - slot_was_set:
+    - booking_duration: "2 ore"
+  - slot_was_set:
+    - requested_slot: booking_purpose
+  - slot_was_set:
+    - booking_purpose: "Riunione di ricerca"
+  - slot_was_set:
+    - requested_slot: null
+  - active_loop: null
+  - action: action_submit_cetma_booking
+  - intent: goodbye
+  - action: utter_goodbye
+
+- story: Richiesta aree disponibili prima di prenotare
+  steps:
+  - intent: greet
+  - action: action_greet_user
+  - intent: ask_areas
+  - action: action_show_available_areas
+  - intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+
+- story: Prenotazione con interruzione
+  steps:
+  - intent: greet
+  - action: action_greet_user
+  - intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+  - intent: stop
+  - action: action_deactivate_loop
+  - active_loop: null
+
+- story: Saluto semplice
+  steps:
+  - intent: greet
+  - action: action_greet_user
+  - intent: goodbye
+  - action: utter_goodbye
+
+- story: Prenotazione Virtual Reality Center
+  steps:
+  - intent: book_area
+    entities:
+    - area: "Virtual Reality Center"
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+  - slot_was_set:
+    - booking_area: "Virtual Reality Center"
+  - slot_was_set:
+    - requested_slot: visitor_name
+  - slot_was_set:
+    - visitor_name: "Ing. Anna Bianchi"
+  - slot_was_set:
+    - requested_slot: visitor_email
+  - slot_was_set:
+    - visitor_email: "anna.bianchi@azienda.it"
+  - slot_was_set:
+    - requested_slot: visitor_phone
+  - slot_was_set:
+    - visitor_phone: "3381234567"
+  - slot_was_set:
+    - requested_slot: booking_date
+  - slot_was_set:
+    - booking_date: "22/12/2025"
+  - slot_was_set:
+    - requested_slot: booking_time
+  - slot_was_set:
+    - booking_time: "09:00"
+  - slot_was_set:
+    - requested_slot: booking_duration
+  - slot_was_set:
+    - booking_duration: "1 ora"
+  - slot_was_set:
+    - requested_slot: booking_purpose
+  - slot_was_set:
+    - booking_purpose: "Test applicazione VR"
+  - slot_was_set:
+    - requested_slot: null
+  - active_loop: null
+  - action: action_submit_cetma_booking
+
+- story: Combinazione domande esistenti e prenotazione
+  steps:
+  - intent: greet
+  - action: action_greet_user
+  - intent: ask_opening_hours
+  - action: utter_opening_hours
+  - intent: ask_where_department
+  - action: utter_where_department
+  - intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+
+- story: Informazioni prima di prenotare
+  steps:
+  - intent: greet
+  - action: action_greet_user
+  - intent: ask_cosa_sai_fare
+  - action: utter_cosa_sai_fare
+  - intent: ask_areas
+  - action: action_show_available_areas
+  - intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+
+- story: Gestione errore validazione
+  steps:
+  - intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+  - slot_was_set:
+    - requested_slot: visitor_name
+  - slot_was_set:
+    - visitor_name: "Marco Rossi"
+  - slot_was_set:
+    - requested_slot: visitor_email
+  - slot_was_set:
+    - visitor_email: null
+  - slot_was_set:
+    - visitor_email: "marco.rossi@email.com"
   - slot_was_set:
     - requested_slot: visitor_phone
   - slot_was_set:
@@ -191,50 +364,6 @@ stories:
   - active_loop: null
   - action: action_submit_cetma_booking
 
-- story: Prenotazione dopo informazioni consegne
-  steps:
-  - intent: ask_delivery_info
-  - action: utter_delivery_info
-  - intent: book_area
-  - action: cetma_booking_form
-  - active_loop: cetma_booking_form
-  - slot_was_set:
-    - requested_slot: visitor_name
-  - slot_was_set:
-    - visitor_name: "Marco Corriere"
-  - slot_was_set:
-    - requested_slot: visitor_email
-  - slot_was_set:
-    - visitor_email: "marco@corriere.it"
-  - slot_was_set:
-    - requested_slot: visitor_phone
-  - slot_was_set:
-    - visitor_phone: "3301234567"
-  - slot_was_set:
-    - requested_slot: booking_area
-  - slot_was_set:
-    - booking_area: "Reception"
-  - slot_was_set:
-    - requested_slot: booking_date
-  - slot_was_set:
-    - booking_date: "27/12/2025"
-  - slot_was_set:
-    - requested_slot: booking_time
-  - slot_was_set:
-    - booking_time: "10:30"
-  - slot_was_set:
-    - requested_slot: booking_duration
-  - slot_was_set:
-    - booking_duration: "mezz'ora"
-  - slot_was_set:
-    - requested_slot: booking_purpose
-  - slot_was_set:
-    - booking_purpose: "Consegna documenti importanti"
-  - slot_was_set:
-    - requested_slot: null
-  - active_loop: null
-  - action: action_submit_cetma_booking
-
 - story: Conversazione completa con ringraziamenti
   steps:
   - intent: greet
@@ -287,113 +416,29 @@ stories:
   - intent: goodbye
   - action: utter_goodbye
 
-- story: Gestione errore orario non valido
-  steps:
-  - intent: book_area
-  - action: cetma_booking_form
-  - active_loop: cetma_booking_form
-  - slot_was_set:
-    - requested_slot: visitor_name
-  - slot_was_set:
-    - visitor_name: "Paolo Neri"
-  - slot_was_set:
-    - requested_slot: visitor_email
-  - slot_was_set:
-    - visitor_email: "paolo.neri@cetma.it"
-  - slot_was_set:
-    - requested_slot: visitor_phone
-  - slot_was_set:
-    - visitor_phone: "3331234567"
-  - slot_was_set:
-    - requested_slot: booking_area
-  - slot_was_set:
-    - booking_area: "Reception"
-  - slot_was_set:
-    - requested_slot: booking_date
-  - slot_was_set:
-    - booking_date: "25/12/2025"
-  - slot_was_set:
-    - requested_slot: booking_time
-  - slot_was_set:
-    - booking_time: null  # Orario non valido
-  - slot_was_set:
-    - booking_time: "16:00"  # Orario valido
-  - slot_was_set:
-    - requested_slot: booking_duration
-  - slot_was_set:
-    - booking_duration: "1 ora"
-  - slot_was_set:
-    - requested_slot: booking_purpose
-  - slot_was_set:
-    - booking_purpose: "Accoglienza delegazione"
-  - slot_was_set:
-    - requested_slot: null
-  - active_loop: null
-  - action: action_submit_cetma_booking
-
-- story: Gestione errore data weekend
-  steps:
-  - intent: book_area
-  - action: cetma_booking_form
-  - active_loop: cetma_booking_form
-  - slot_was_set:
-    - requested_slot: visitor_name
-  - slot_was_set:
-    - visitor_name: "Elena Verdi"
-  - slot_was_set:
-    - requested_slot: visitor_email
-  - slot_was_set:
-    - visitor_email: "elena.verdi@uni.it"
-  - slot_was_set:
-    - requested_slot: visitor_phone
-  - slot_was_set:
-    - visitor_phone: "3471234567"
-  - slot_was_set:
-    - requested_slot: booking_area
-  - slot_was_set:
-    - booking_area: "Dipartimento NED"
-  - slot_was_set:
-    - requested_slot: booking_date
-  - slot_was_set:
-    - booking_date: null  # Data weekend non valida
-  - slot_was_set:
-    - booking_date: "23/12/2025"  # Data lavorativa
-  - slot_was_set:
-    - requested_slot: booking_time
-  - slot_was_set:
-    - booking_time: "13:00"
-  - slot_was_set:
-    - requested_slot: booking_duration
-  - slot_was_set:
-    - booking_duration: "1 ora"
-  - slot_was_set:
-    - requested_slot: booking_purpose
-  - slot_was_set:
-    - booking_purpose: "Consultazione"
-  - slot_was_set:
-    - requested_slot: null
-  - active_loop: null
-  - action: action_submit_cetma_booking
-
-- story: Prenotazione urgente stesso giorno
+- story: Sequenza help completa
   steps:
   - intent: greet
   - action: action_greet_user
+  - intent: ask_help_booking
+  - action: action_help_booking
+  - intent: ask_areas
+  - action: action_show_available_areas
   - intent: book_area
   - action: cetma_booking_form
   - active_loop: cetma_booking_form
   - slot_was_set:
     - requested_slot: visitor_name
   - slot_was_set:
-    - visitor_name: "Dott. Urgente"
+    - visitor_name: "Utente Aiutato"
   - slot_was_set:
     - requested_slot: visitor_email
   - slot_was_set:
-    - visitor_email: "urgente@cetma.it"
+    - visitor_email: "aiuto@test.it"
   - slot_was_set:
     - requested_slot: visitor_phone
   - slot_was_set:
-    - visitor_phone: "3491234567"
+    - visitor_phone: "3401234567"
   - slot_was_set:
     - requested_slot: booking_area
   - slot_was_set:
@@ -401,328 +446,11 @@ stories:
   - slot_was_set:
     - requested_slot: booking_date
   - slot_was_set:
-    - booking_date: "oggi"
+    - booking_date: "29/12/2025"
   - slot_was_set:
     - requested_slot: booking_time
   - slot_was_set:
-    - booking_time: "15:30"
-  - slot_was_set:
-    - requested_slot: booking_duration
-  - slot_was_set:
-    - booking_duration: "mezz'ora"
-  - slot_was_set:
-    - requested_slot: booking_purpose
-  - slot_was_set:
-    - booking_purpose: "Riunione urgente con direzione"
-  - slot_was_set:
-    - requested_slot: null
-  - active_loop: null
-  - action: action_submit_cetma_booking
-
-- story: Prenotazione lunga durata
-  steps:
-  - intent: book_area
-  - action: cetma_booking_form
-  - active_loop: cetma_booking_form
-  - slot_was_set:
-    - requested_slot: visitor_name
-  - slot_was_set:
-    - visitor_name: "Team Ricerca"
-  - slot_was_set:
-    - requested_slot: visitor_email
-  - slot_was_set:
-    - visitor_email: "team@ricerca.it"
-  - slot_was_set:
-    - requested_slot: visitor_phone
-  - slot_was_set:
-    - visitor_phone: "3501234567"
-  - slot_was_set:
-    - requested_slot: booking_area
-  - slot_was_set:
-    - booking_area: "Laboratorio"
-  - slot_was_set:
-    - requested_slot: booking_date
-  - slot_was_set:
-    - booking_date: "30/12/2025"
-  - slot_was_set:
-    - requested_slot: booking_time
-  - slot_was_set:
-    - booking_time: "09:00"
-  - slot_was_set:
-    - requested_slot: booking_duration
-  - slot_was_set:
-    - booking_duration: "tutta la giornata"
-  - slot_was_set:
-    - requested_slot: booking_purpose
-  - slot_was_set:
-    - booking_purpose: "Esperimenti intensivi su nuovi materiali"
-  - slot_was_set:
-    - requested_slot: null
-  - active_loop: null
-  - action: action_submit_cetma_booking
-
-- story: Combinazione domande esistenti completa
-  steps:
-  - intent: greet
-  - action: action_greet_user
-  - intent: ask_opening_hours
-  - action: utter_opening_hours
-  - intent: ask_where_department
-  - action: utter_where_department
-  - intent: ask_where_pluto_meeting
-  - action: utter_where_pluto_meeting
-  - intent: book_area
-    entities:
-    - area: "Sala Angelo Marino"
-  - action: cetma_booking_form
-  - active_loop: cetma_booking_form
-  - slot_was_set:
-    - booking_area: "Sala Angelo Marino"
-  - slot_was_set:
-    - requested_slot: visitor_name
-  - slot_was_set:
-    - visitor_name: "Coordinatore Pluto"
-  - slot_was_set:
-    - requested_slot: visitor_email
-  - slot_was_set:
-    - visitor_email: "pluto@europa.eu"
-  - slot_was_set:
-    - requested_slot: visitor_phone
-  - slot_was_set:
-    - visitor_phone: "3511234567"
-  - slot_was_set:
-    - requested_slot: booking_date
-  - slot_was_set:
-    - booking_date: "31/12/2025"
-  - slot_was_set:
-    - requested_slot: booking_time
-  - slot_was_set:
-    - booking_time: "09:30"
-  - slot_was_set:
-    - requested_slot: booking_duration
-  - slot_was_set:
-    - booking_duration: "6 ore"
-  - slot_was_set:
-    - requested_slot: booking_purpose
-  - slot_was_set:
-    - booking_purpose: "Meeting finale progetto europeo Pluto"
-  - slot_was_set:
-    - requested_slot: null
-  - active_loop: null
-  - action: action_submit_cetma_booking
-  - intent: thank_you
-  - action: utter_thank_you
-
-- story: Sequenza help e prenotazione
-  steps:
-  - intent: greet
-  - action: action_greet_user
-  - intent: help_request
-  - action: utter_help
-  - intent: ask_cosa_sai_fare
-  - action: utter_cosa_sai_fare
-  - intent: ask_areas
-  - action: action_show_available_areas
-  - intent: book_area
-  - action: cetma_booking_form
-  - active_loop: cetma_booking_form
-  - slot_was_set:
-    - requested_slot: visitor_name
-  - slot_was_set:
-    - visitor_name: "Nuovo Utente"
-  - slot_was_set:
-    - requested_slot: visitor_email
-  - slot_was_set:
-    - visitor_email: "nuovo@utente.it"
-  - slot_was_set:
-    - requested_slot: visitor_phone
-  - slot_was_set:
-    - visitor_phone: "3521234567"
-  - slot_was_set:
-    - requested_slot: booking_area
-  - slot_was_set:
-    - booking_area: "Reception"
-  - slot_was_set:
-    - requested_slot: booking_date
-  - slot_was_set:
-    - booking_date: "02/01/2026"
-  - slot_was_set:
-    - requested_slot: booking_time
-  - slot_was_set:
-    - booking_time: "11:00"
-  - slot_was_set:
-    - requested_slot: booking_duration
-  - slot_was_set:
-    - booking_duration: "30 minuti"
-  - slot_was_set:
-    - requested_slot: booking_purpose
-  - slot_was_set:
-    - booking_purpose: "Prima visita e orientamento"
-  - slot_was_set:
-    - requested_slot: null
-  - active_loop: null
-  - action: action_submit_cetma_booking
-
-- story: Gestione area non disponibile
-  steps:
-  - intent: book_area
-  - action: cetma_booking_form
-  - active_loop: cetma_booking_form
-  - slot_was_set:
-    - requested_slot: visitor_name
-  - slot_was_set:
-    - visitor_name: "Test Disponibilità"
-  - slot_was_set:
-    - requested_slot: visitor_email
-  - slot_was_set:
-    - visitor_email: "test@disponibilita.it"
-  - slot_was_set:
-    - requested_slot: visitor_phone
-  - slot_was_set:
-    - visitor_phone: "3531234567"
-  - slot_was_set:
-    - requested_slot: booking_area
-  - slot_was_set:
-    - booking_area: "Sala Angelo Marino"
-  - slot_was_set:
-    - requested_slot: booking_date
-  - slot_was_set:
-    - booking_date: "25/12/2025"
-  - slot_was_set:
-    - requested_slot: booking_time
-  - slot_was_set:
-    - booking_time: "10:00"  # Orario occupato simulato
-  - slot_was_set:
-    - booking_time: "14:00"  # Nuovo orario
-  - slot_was_set:
-    - requested_slot: booking_duration
-  - slot_was_set:
-    - booking_duration: "2 ore"
-  - slot_was_set:
-    - requested_slot: booking_purpose
-  - slot_was_set:
-    - booking_purpose: "Test sistema prenotazioni"
-  - slot_was_set:
-    - requested_slot: null
-  - active_loop: null
-  - action: action_submit_cetma_booking
-
-
-- story: Richiesta aree disponibili prima di prenotare
-  steps:
-  - intent: greet
-  - action: action_greet_user
-  - intent: ask_areas
-  - action: action_show_available_areas
-  - intent: book_area
-  - action: cetma_booking_form
-  - active_loop: cetma_booking_form
-
-- story: Prenotazione con interruzione
-  steps:
-  - intent: greet
-  - action: action_greet_user
-  - intent: book_area
-  - action: cetma_booking_form
-  - active_loop: cetma_booking_form
-  - intent: stop
-  - action: action_deactivate_loop
-  - active_loop: null
-
-- story: Prenotazione con riavvio
-  steps:
-  - intent: greet
-  - action: action_greet_user
-  - intent: book_area
-  - action: cetma_booking_form
-  - active_loop: cetma_booking_form
-  - slot_was_set:
-    - requested_slot: visitor_name
-  - intent: stop
-  - action: action_deactivate_loop
-  - active_loop: null
-  - intent: book_area
-  - action: cetma_booking_form
-  - active_loop: cetma_booking_form
-
-- story: Saluto semplice
-  steps:
-  - intent: greet
-  - action: action_greet_user
-  - intent: goodbye
-  - action: utter_goodbye
-
-- story: Prenotazione diretta Sala Angelo Marino
-  steps:
-  - intent: book_area
-    entities:
-    - area: "Sala Angelo Marino"
-  - action: cetma_booking_form
-  - active_loop: cetma_booking_form
-  - slot_was_set:
-    - booking_area: "Sala Angelo Marino"
-  - slot_was_set:
-    - requested_slot: visitor_name
-  - slot_was_set:
-    - visitor_name: "Prof. Luca Verdi"
-  - slot_was_set:
-    - requested_slot: visitor_email
-  - slot_was_set:
-    - visitor_email: "luca.verdi@cetma.it"
-  - slot_was_set:
-    - requested_slot: visitor_phone
-  - slot_was_set:
-    - visitor_phone: "3471234567"
-  - slot_was_set:
-    - requested_slot: booking_date
-  - slot_was_set:
-    - booking_date: "21/12/2025"
-  - slot_was_set:
-    - requested_slot: booking_time
-  - slot_was_set:
-    - booking_time: "14:00"
-  - slot_was_set:
-    - requested_slot: booking_duration
-  - slot_was_set:
-    - booking_duration: "3 ore"
-  - slot_was_set:
-    - requested_slot: booking_purpose
-  - slot_was_set:
-    - booking_purpose: "Meeting progetto europeo Pluto"
-  - slot_was_set:
-    - requested_slot: null
-  - active_loop: null
-  - action: action_submit_cetma_booking
-
-- story: Prenotazione Virtual Reality Center
-  steps:
-  - intent: book_area
-    entities:
-    - area: "Virtual Reality Center"
-  - action: cetma_booking_form
-  - active_loop: cetma_booking_form
-  - slot_was_set:
-    - booking_area: "Virtual Reality Center"
-  - slot_was_set:
-    - requested_slot: visitor_name
-  - slot_was_set:
-    - visitor_name: "Ing. Anna Bianchi"
-  - slot_was_set:
-    - requested_slot: visitor_email
-  - slot_was_set:
-    - visitor_email: "anna.bianchi@azienda.it"
-  - slot_was_set:
-    - requested_slot: visitor_phone
-  - slot_was_set:
-    - visitor_phone: "3381234567"
-  - slot_was_set:
-    - requested_slot: booking_date
-  - slot_was_set:
-    - booking_date: "22/12/2025"
-  - slot_was_set:
-    - requested_slot: booking_time
-  - slot_was_set:
-    - booking_time: "09:00"
+    - booking_time: "15:00"
   - slot_was_set:
     - requested_slot: booking_duration
   - slot_was_set:
@@ -730,52 +458,10 @@ stories:
   - slot_was_set:
     - requested_slot: booking_purpose
   - slot_was_set:
-    - booking_purpose: "Test applicazione VR"
+    - booking_purpose: "Test dopo aver ricevuto aiuto"
   - slot_was_set:
     - requested_slot: null
   - active_loop: null
   - action: action_submit_cetma_booking
-
-- story: Combinazione domande esistenti e prenotazione
-  steps:
-  - intent: greet
-  - action: action_greet_user
-  - intent: ask_opening_hours
-  - action: utter_opening_hours
-  - intent: ask_where_department
-  - action: utter_where_department
-  - intent: book_area
-  - action: cetma_booking_form
-  - active_loop: cetma_booking_form
-
-- story: Informazioni prima di prenotare
-  steps:
-  - intent: greet
-  - action: action_greet_user
-  - intent: ask_cosa_sai_fare
-  - action: utter_cosa_sai_fare
-  - intent: ask_areas
-  - action: action_show_available_areas
-  - intent: book_area
-  - action: cetma_booking_form
-  - active_loop: cetma_booking_form
-
-- story: Gestione errore validazione
-  steps:
-  - intent: book_area
-  - action: cetma_booking_form
-  - active_loop: cetma_booking_form
-  - slot_was_set:
-    - requested_slot: visitor_name
-  - slot_was_set:
-    - visitor_name: "Marco Rossi"
-  - slot_was_set:
-    - requested_slot: visitor_email
-  - slot_was_set:
-    - visitor_email: null  # Email non valida
-  - slot_was_set:
-    - visitor_email: "marco.rossi@email.com"
-  - slot_was_set:
-    - requested_slot: visitor_phone
-  - slot_was_set:
-    - visitor_phone: "3401234567"
+  - intent: thank_you
+  - action: utter_thank_you

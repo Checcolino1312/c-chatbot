@@ -35,14 +35,18 @@ class ValidateCetmaBookingForm(FormValidationAction):
     ) -> Dict[Text, Any]:
         """Valida il nome del visitatore"""
         
-        if not slot_value or len(slot_value.strip()) < 2:
-            dispatcher.utter_message(text="Il nome deve contenere almeno 2 caratteri. Riprova:")
+        if not slot_value:
+            dispatcher.utter_message(text="Per favore, dimmi il tuo nome.")
+            return {"visitor_name": None}
+            
+        if len(slot_value.strip()) < 2:
+            dispatcher.utter_message(text="Il nome deve contenere almeno 2 caratteri. Come ti chiami?")
             return {"visitor_name": None}
         
         # Pulisci e valida il nome completo
         clean_name = slot_value.strip()
         if not re.match(r"^[a-zA-ZÀ-ÿ\s\.]+$", clean_name):
-            dispatcher.utter_message(text="Il nome può contenere solo lettere, spazi e punti. Riprova:")
+            dispatcher.utter_message(text="Il nome può contenere solo lettere, spazi e punti. Qual è il tuo nome?")
             return {"visitor_name": None}
         
         return {"visitor_name": clean_name.title()}
@@ -467,6 +471,67 @@ class ActionGreetUser(Action):
                  "Come posso aiutarti oggi?"
         )
         
+        return []
+
+
+class ActionHelpBooking(Action):
+    """Azione per aiutare con la prenotazione"""
+    
+    def name(self) -> Text:
+        return "action_help_booking"
+    
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        help_message = """📋 **GUIDA PRENOTAZIONE AREE CETMA**
+
+🎯 **Come prenotare:**
+1️⃣ Dimmi "vorrei prenotare un'area"
+2️⃣ Ti chiederò: nome, email, telefono
+3️⃣ Scegli l'area che ti serve
+4️⃣ Indica data, ora, durata e motivo
+
+🏢 **Aree disponibili:**
+• Dipartimento NED (2° piano)
+• Sala Angelo Marino (3° piano)  
+• Laboratorio (piano terra)
+• Virtual Reality Center (piano terra)
+• Sala Riunioni
+• Reception
+
+⏰ **Orari:** Lun-Ven 08:00-17:00
+📅 **Date:** Solo giorni lavorativi
+
+💡 **Esempi di come iniziare:**
+• "Prenota area"
+• "Vorrei una sala" 
+• "Ho bisogno del laboratorio"
+
+Pronto? Dimmi "prenota area" per iniziare! 🚀"""
+        
+        dispatcher.utter_message(text=help_message)
+        return []
+
+
+class ActionOutOfScope(Action):
+    """Azione per domande fuori contesto"""
+    
+    def name(self) -> Text:
+        return "action_out_of_scope"
+    
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        dispatcher.utter_message(
+            text="Mi dispiace, ma posso aiutarti solo con:\n"
+                 "🏢 Informazioni sul CETMA\n"
+                 "📋 Prenotazioni aree\n"
+                 "🗺️ Orientamento nella sede\n"
+                 "📞 Contatti e orari\n\n"
+                 "Cosa posso fare per te oggi?"
+        )
         return []
 
 

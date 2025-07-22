@@ -206,6 +206,18 @@ nlu:
     - prenota area
     - prenotazione sala
     - prenotazione spazio
+    - mi serve una sala
+    - devo prenotare
+    - posso avere un'area
+    - necessito di uno spazio
+    - riservare una sala
+    - booking
+    - reservation
+    - prenota
+    - riserva
+    - mi servirebbe prenotare
+    - vorrei riservare
+    - posso riservare
 
 - intent: ask_areas
   examples: |
@@ -349,6 +361,32 @@ nlu:
     - interrompi
     - cancella prenotazione
     - annulla
+
+- intent: ask_help_booking
+  examples: |
+    - come faccio a prenotare?
+    - aiuto prenotazione
+    - non riesco a prenotare
+    - come funziona la prenotazione?
+    - che informazioni servono per prenotare?
+    - cosa devo dire per prenotare?
+    - aiutami a prenotare
+    - non capisco come prenotare
+    - spiegami la prenotazione
+    - guida prenotazione
+
+- intent: out_of_scope
+  examples: |
+    - che tempo fa?
+    - chi ha vinto la partita?
+    - ricetta della pasta
+    - prezzo benzina
+    - notizie del giorno
+    - come si cucina
+    - che ore sono a tokyo
+    - calcola 2+2
+    - dimmi una barzelletta
+    - canta una canzone
 
 lookup:
   - name: names

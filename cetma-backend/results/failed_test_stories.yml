@@ -1,0 +1,26 @@
+version: "3.1"
+stories:
+- story: test gestione input misti durante form (C:\Users\cicci\OneDrive\Desktop\c-chatbot\cetma-backend\tests\test_stories.yml)
+  steps:
+  - intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+  - slot_was_set:
+    - requested_slot: visitor_name
+  - intent: out_of_scope
+  - action: action_out_of_scope
+  - user: |-
+      Mario Edge Case
+  - action: cetma_booking_form  # predicted: action_deactivate_loop
+  - slot_was_set:
+    - visitor_name: Mario Edge Case
+  - slot_was_set:
+    - requested_slot: visitor_email
+  - intent: ask_help_booking
+  - action: action_help_booking
+  - action: action_listen  # predicted: action_default_fallback
+  - user: |-
+      mario@edge.case
+  - action: cetma_booking_form  # predicted: action_default_fallback
+  - slot_was_set:
+    - visitor_email: mario@edge.case

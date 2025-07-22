@@ -1,91 +1,519 @@
-#### This file contains tests to evaluate that your bot behaves as expected.
-#### If you want to learn more, please see the docs: https://rasa.com/docs/rasa/testing-your-assistant
+#### Test Stories per CETMA Chatbot
+#### Questo file contiene test per verificare che il bot si comporti come previsto
+#### Per eseguire i test: rasa test
+
+version: "3.1"
 
 stories:
-- story: happy path 1
+
+# Test funzionalità esistenti CETMA
+- story: test saluto base
   steps:
   - user: |
-      hello there!
+      ciao
     intent: greet
-  - action: utter_greet
-  - user: |
-      amazing
-    intent: mood_great
-  - action: utter_happy
+  - action: action_greet_user
 
-- story: happy path 2
+- story: test bot challenge
   steps:
   - user: |
-      hello there!
-    intent: greet
-  - action: utter_greet
-  - user: |
-      amazing
-    intent: mood_great
-  - action: utter_happy
-  - user: |
-      bye-bye!
-    intent: goodbye
-  - action: utter_goodbye
-
-- story: sad path 1
-  steps:
-  - user: |
-      hello
-    intent: greet
-  - action: utter_greet
-  - user: |
-      not good
-    intent: mood_unhappy
-  - action: utter_cheer_up
-  - action: utter_did_that_help
-  - user: |
-      yes
-    intent: affirm
-  - action: utter_happy
-
-- story: sad path 2
-  steps:
-  - user: |
-      hello
-    intent: greet
-  - action: utter_greet
-  - user: |
-      not good
-    intent: mood_unhappy
-  - action: utter_cheer_up
-  - action: utter_did_that_help
-  - user: |
-      not really
-    intent: deny
-  - action: utter_goodbye
-
-- story: sad path 3
-  steps:
-  - user: |
-      hi
-    intent: greet
-  - action: utter_greet
-  - user: |
-      very terrible
-    intent: mood_unhappy
-  - action: utter_cheer_up
-  - action: utter_did_that_help
-  - user: |
-      no
-    intent: deny
-  - action: utter_goodbye
-
-- story: say goodbye
-  steps:
-  - user: |
-      bye-bye!
-    intent: goodbye
-  - action: utter_goodbye
-
-- story: bot challenge
-  steps:
-  - user: |
-      are you a bot?
+      sei un bot?
     intent: bot_challenge
   - action: utter_iamabot
+
+- story: test orari apertura
+  steps:
+  - user: |
+      quali sono gli orari?
+    intent: ask_opening_hours
+  - action: utter_opening_hours
+
+- story: test posizione dipartimento NED
+  steps:
+  - user: |
+      dove si trova il dipartimento NED?
+    intent: ask_where_department
+  - action: utter_where_department
+
+- story: test posizione Italo Spada
+  steps:
+  - user: |
+      dove posso trovare il dott. Italo Spada?
+    intent: ask_where_italo
+  - action: utter_where_italo
+
+- story: test meeting Pluto
+  steps:
+  - user: |
+      dove si tiene il meeting del progetto Pluto?
+    intent: ask_where_pluto_meeting
+  - action: utter_where_pluto_meeting
+
+- story: test info consegne
+  steps:
+  - user: |
+      sono un corriere, quando posso consegnare?
+    intent: ask_delivery_info
+  - action: utter_delivery_info
+
+- story: test cosa sai fare
+  steps:
+  - user: |
+      cosa sai fare?
+    intent: ask_cosa_sai_fare
+  - action: utter_cosa_sai_fare
+
+# Test sistema prenotazione aree
+- story: test attivazione form prenotazione
+  steps:
+  - user: |
+      vorrei prenotare un'area
+    intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+
+- story: test mostra aree disponibili
+  steps:
+  - user: |
+      quali aree sono disponibili?
+    intent: ask_areas
+  - action: action_show_available_areas
+
+- story: test aiuto prenotazione
+  steps:
+  - user: |
+      come faccio a prenotare?
+    intent: ask_help_booking
+  - action: action_help_booking
+
+- story: test gestione out of scope
+  steps:
+  - user: |
+      che tempo fa oggi?
+    intent: out_of_scope
+  - action: action_out_of_scope
+
+# Test form prenotazione completo
+- story: test prenotazione completa dipartimento NED
+  steps:
+  - user: |
+      prenota area
+    intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+  - slot_was_set:
+    - requested_slot: visitor_name
+  - user: |
+      Mario Rossi
+    intent: provide_name
+  - action: cetma_booking_form
+  - slot_was_set:
+    - visitor_name: "Mario Rossi"
+  - slot_was_set:
+    - requested_slot: visitor_email
+  - user: |
+      mario.rossi@test.it
+    intent: provide_email
+  - action: cetma_booking_form
+  - slot_was_set:
+    - visitor_email: "mario.rossi@test.it"
+  - slot_was_set:
+    - requested_slot: visitor_phone
+  - user: |
+      3401234567
+    intent: provide_phone
+  - action: cetma_booking_form
+  - slot_was_set:
+    - visitor_phone: "3401234567"
+  - slot_was_set:
+    - requested_slot: booking_area
+  - user: |
+      Dipartimento NED
+    intent: provide_area
+  - action: cetma_booking_form
+  - slot_was_set:
+    - booking_area: "Dipartimento NED"
+  - slot_was_set:
+    - requested_slot: booking_date
+  - user: |
+      domani
+    intent: provide_date
+  - action: cetma_booking_form
+  - slot_was_set:
+    - requested_slot: booking_time
+  - user: |
+      10:00
+    intent: provide_time
+  - action: cetma_booking_form
+  - slot_was_set:
+    - booking_time: "10:00"
+  - slot_was_set:
+    - requested_slot: booking_duration
+  - user: |
+      2 ore
+    intent: provide_duration
+  - action: cetma_booking_form
+  - slot_was_set:
+    - booking_duration: "2 ore"
+  - slot_was_set:
+    - requested_slot: booking_purpose
+  - user: |
+      riunione di lavoro
+    intent: provide_purpose
+  - action: cetma_booking_form
+  - slot_was_set:
+    - booking_purpose: "riunione di lavoro"
+  - slot_was_set:
+    - requested_slot: null
+  - active_loop: null
+  - action: action_submit_cetma_booking
+
+# Test validazione errori
+- story: test validazione email errata
+  steps:
+  - user: |
+      prenota area
+    intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+  - slot_was_set:
+    - requested_slot: visitor_name
+  - user: |
+      Test User
+  - action: cetma_booking_form
+  - slot_was_set:
+    - visitor_name: "Test User"
+  - slot_was_set:
+    - requested_slot: visitor_email
+  - user: |
+      email-non-valida
+  - action: cetma_booking_form
+  - slot_was_set:
+    - visitor_email: null
+  - user: |
+      test@email.com
+  - action: cetma_booking_form
+  - slot_was_set:
+    - visitor_email: "test@email.com"
+
+- story: test validazione nome troppo corto
+  steps:
+  - user: |
+      book area
+    intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+  - slot_was_set:
+    - requested_slot: visitor_name
+  - user: |
+      X
+  - action: cetma_booking_form
+  - slot_was_set:
+    - visitor_name: null
+  - user: |
+      Nome Valido
+  - action: cetma_booking_form
+  - slot_was_set:
+    - visitor_name: "Nome Valido"
+
+- story: test validazione orario non valido
+  steps:
+  - user: |
+      prenota
+    intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+  - slot_was_set:
+    - requested_slot: visitor_name
+  - user: |
+      Test User
+  - action: cetma_booking_form
+  - slot_was_set:
+    - requested_slot: visitor_email
+  - user: |
+      test@test.it
+  - action: cetma_booking_form
+  - slot_was_set:
+    - requested_slot: visitor_phone
+  - user: |
+      3401234567
+  - action: cetma_booking_form
+  - slot_was_set:
+    - requested_slot: booking_area
+  - user: |
+      Laboratorio
+  - action: cetma_booking_form
+  - slot_was_set:
+    - requested_slot: booking_date
+  - user: |
+      oggi
+  - action: cetma_booking_form
+  - slot_was_set:
+    - requested_slot: booking_time
+  - user: |
+      25:00
+  - action: cetma_booking_form
+  - slot_was_set:
+    - booking_time: null
+  - user: |
+      14:00
+  - action: cetma_booking_form
+  - slot_was_set:
+    - booking_time: "14:00"
+
+# Test interruzione form
+- story: test interruzione form con stop
+  steps:
+  - user: |
+      vorrei prenotare
+    intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+  - slot_was_set:
+    - requested_slot: visitor_name
+  - user: |
+      stop
+    intent: stop
+  - action: action_deactivate_loop
+  - active_loop: null
+
+# Test prenotazioni specifiche per area
+- story: test prenotazione Virtual Reality Center
+  steps:
+  - user: |
+      ho bisogno del Virtual Reality Center
+    intent: book_area
+    entities:
+    - area: "Virtual Reality Center"
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+  - slot_was_set:
+    - booking_area: "Virtual Reality Center"
+  - slot_was_set:
+    - requested_slot: visitor_name
+
+- story: test prenotazione Sala Angelo Marino
+  steps:
+  - user: |
+      prenota sala Angelo Marino
+    intent: book_area
+    entities:
+    - area: "Sala Angelo Marino"
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+  - slot_was_set:
+    - booking_area: "Sala Angelo Marino"
+  - slot_was_set:
+    - requested_slot: visitor_name
+
+# Test conversazioni integrate
+- story: test flusso informazioni + prenotazione
+  steps:
+  - user: |
+      ciao
+    intent: greet
+  - action: action_greet_user
+  - user: |
+      quali sono gli orari?
+    intent: ask_opening_hours
+  - action: utter_opening_hours
+  - user: |
+      dove si trova il dipartimento NED?
+    intent: ask_where_department
+  - action: utter_where_department
+  - user: |
+      vorrei prenotare quest'area
+    intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+
+- story: test sequenza help + prenotazione
+  steps:
+  - user: |
+      ciao
+    intent: greet
+  - action: action_greet_user
+  - user: |
+      non so come prenotare
+    intent: ask_help_booking
+  - action: action_help_booking
+  - user: |
+      mostrami le aree
+    intent: ask_areas
+  - action: action_show_available_areas
+  - user: |
+      prenota area
+    intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+
+# Test gestione confusione utente
+- story: test utente confuso recupera
+  steps:
+  - user: |
+      salve
+    intent: greet
+  - action: action_greet_user
+  - user: |
+      che tempo fa?
+    intent: out_of_scope
+  - action: action_out_of_scope
+  - user: |
+      ah ok, come posso prenotare?
+    intent: ask_help_booking
+  - action: action_help_booking
+  - user: |
+      perfetto, prenota area
+    intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+
+# Test conversazione completa con saluto finale
+- story: test conversazione completa con ringraziamenti
+  steps:
+  - user: |
+      buongiorno
+    intent: greet
+  - action: action_greet_user
+  - user: |
+      cosa puoi fare?
+    intent: ask_bot_function
+  - action: utter_bot_function
+  - user: |
+      show me the areas
+    intent: ask_areas
+  - action: action_show_available_areas
+  - user: |
+      book laboratorio
+    intent: book_area
+    entities:
+    - area: "laboratorio"
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+  - slot_was_set:
+    - booking_area: "Laboratorio"
+  - slot_was_set:
+    - requested_slot: visitor_name
+  - user: |
+      Test Complete User
+  - action: cetma_booking_form
+  - slot_was_set:
+    - visitor_name: "Test Complete User"
+  - slot_was_set:
+    - requested_slot: visitor_email
+  - user: |
+      complete@test.it
+  - action: cetma_booking_form
+  - slot_was_set:
+    - visitor_email: "complete@test.it"
+  - slot_was_set:
+    - requested_slot: visitor_phone
+  - user: |
+      3401234567
+  - action: cetma_booking_form
+  - slot_was_set:
+    - visitor_phone: "3401234567"
+  - slot_was_set:
+    - requested_slot: booking_date
+  - user: |
+      dopodomani
+  - action: cetma_booking_form
+  - slot_was_set:
+    - requested_slot: booking_time
+  - user: |
+      quindici
+  - action: cetma_booking_form
+  - slot_was_set:
+    - booking_time: "15:00"
+  - slot_was_set:
+    - requested_slot: booking_duration
+  - user: |
+      tre ore
+  - action: cetma_booking_form
+  - slot_was_set:
+    - booking_duration: "3 ore"
+  - slot_was_set:
+    - requested_slot: booking_purpose
+  - user: |
+      test completo del sistema
+  - action: cetma_booking_form
+  - slot_was_set:
+    - booking_purpose: "test completo del sistema"
+  - slot_was_set:
+    - requested_slot: null
+  - active_loop: null
+  - action: action_submit_cetma_booking
+  - user: |
+      perfetto grazie
+    intent: thank_you
+  - action: utter_thank_you
+  - user: |
+      arrivederci
+    intent: goodbye
+  - action: utter_goodbye
+
+# Test edge cases
+- story: test gestione input misti durante form
+  steps:
+  - user: |
+      prenota
+    intent: book_area
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+  - slot_was_set:
+    - requested_slot: visitor_name
+  - user: |
+      che tempo fa?
+    intent: out_of_scope
+  - action: action_out_of_scope
+  - user: |
+      Mario Edge Case
+  - action: cetma_booking_form
+  - slot_was_set:
+    - visitor_name: "Mario Edge Case"
+  - slot_was_set:
+    - requested_slot: visitor_email
+  - user: |
+      aiuto
+    intent: ask_help_booking
+  - action: action_help_booking
+  - user: |
+      mario@edge.case
+  - action: cetma_booking_form
+  - slot_was_set:
+    - visitor_email: "mario@edge.case"
+
+# Test recupero da multiple interruzioni
+- story: test resilienza multiple interruzioni
+  steps:
+  - user: |
+      ciao
+    intent: greet
+  - action: action_greet_user
+  - user: |
+      barzelletta
+    intent: out_of_scope
+  - action: action_out_of_scope
+  - user: |
+      come prenotare?
+    intent: ask_help_booking
+  - action: action_help_booking
+  - user: |
+      calcola 2+2
+    intent: out_of_scope
+  - action: action_out_of_scope
+  - user: |
+      aree disponibili
+    intent: ask_areas
+  - action: action_show_available_areas
+  - user: |
+      prenota reception
+    intent: book_area
+    entities:
+    - area: "reception"
+  - action: cetma_booking_form
+  - active_loop: cetma_booking_form
+  - slot_was_set:
+    - booking_area: "Reception"
+  - slot_was_set:
+    - requested_slot: visitor_name

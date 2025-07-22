@@ -1,0 +1,135 @@
+{
+  "utter_iamabot": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 1
+  },
+  "utter_cosa_sai_fare": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 1
+  },
+  "utter_thank_you": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 1
+  },
+  "utter_goodbye": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 1
+  },
+  "action_submit_cetma_booking": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 2
+  },
+  "action_greet_user": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 6
+  },
+  "utter_where_italo": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 1
+  },
+  "utter_bot_function": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 1
+  },
+  "utter_where_pluto_meeting": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 1
+  },
+  "action_help_booking": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 5
+  },
+  "utter_delivery_info": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 1
+  },
+  "action_out_of_scope": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 5
+  },
+  "action_deactivate_loop": {
+    "precision": 0.5,
+    "recall": 1.0,
+    "f1-score": 0.6666666666666666,
+    "support": 1
+  },
+  "cetma_booking_form": {
+    "precision": 1.0,
+    "recall": 0.9534883720930233,
+    "f1-score": 0.9761904761904763,
+    "support": 43
+  },
+  "utter_opening_hours": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 2
+  },
+  "utter_where_department": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 2
+  },
+  "action_show_available_areas": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 4
+  },
+  "action_listen": {
+    "precision": 1.0,
+    "recall": 0.9868421052631579,
+    "f1-score": 0.9933774834437086,
+    "support": 76
+  },
+  "micro avg": {
+    "precision": 0.993421052631579,
+    "recall": 0.9805194805194806,
+    "f1-score": 0.9869281045751634,
+    "support": 154
+  },
+  "macro avg": {
+    "precision": 0.9722222222222222,
+    "recall": 0.9966850265197879,
+    "f1-score": 0.9797908125722695,
+    "support": 154
+  },
+  "weighted avg": {
+    "precision": 0.9967532467532467,
+    "recall": 0.9805194805194806,
+    "f1-score": 0.9879191291206427,
+    "support": 154
+  },
+  "accuracy": 0.9805194805194806,
+  "conversation_accuracy": {
+    "accuracy": 0.96,
+    "correct": 24,
+    "with_warnings": 0,
+    "total": 25
+  }
+}

@@ -126,3 +126,13 @@ rules:
   steps:
   - intent: mood_unhappy
   - action: utter_cheer_up
+
+- rule: Aiuto prenotazione
+  steps:
+  - intent: ask_help_booking
+  - action: action_help_booking
+
+- rule: Gestisci domande fuori contesto
+  steps:
+  - intent: out_of_scope
+  - action: action_out_of_scope

@@ -33,6 +33,8 @@ intents:
   - provide_duration
   - provide_purpose
   - stop
+  - ask_help_booking
+  - out_of_scope
 
 entities:
   - name
@@ -136,6 +138,15 @@ responses:
   
   utter_default:
   - text: "Mi dispiace, non ho capito. Puoi ripetere?"
+  - text: "Non ho capito bene. Puoi riformulare la richiesta?"
+  - text: "Scusa, puoi dirlo in modo diverso?"
+
+  utter_please_rephrase:
+  - text: "Non sono sicuro di aver capito. Puoi spiegare meglio cosa vuoi fare?"
+  - text: "Potresti riformulare? Posso aiutarti con prenotazioni aree, informazioni CETMA o orientamento."
+
+  utter_ask_again:
+  - text: "Cosa posso fare per te? Posso aiutarti con:\n• Prenotazione aree\n• Informazioni sulla sede\n• Contatti e orari"
 
   utter_goodbye:
   - text: "Arrivederci! Per ulteriori informazioni contatta la reception CETMA al 0831-201218."
@@ -274,6 +285,8 @@ actions:
   - validate_cetma_booking_form
   - action_submit_cetma_booking
   - action_show_available_areas
+  - action_help_booking
+  - action_out_of_scope
 
 forms:
   cetma_booking_form:
