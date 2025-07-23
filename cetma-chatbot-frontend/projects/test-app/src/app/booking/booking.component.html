@@ -1,0 +1,225 @@
+<div class="booking-container">
+  <header class="booking-header">
+    <h1>Prenotazioni CETMA</h1>
+    <p>Visualizzazione prenotazioni laboratori e spazi di ricerca</p>
+  </header>
+
+  <!-- Messaggio di errore -->
+  <div class="error-message" *ngIf="errorMessage">
+    <i class="icon">⚠️</i>
+    {{ errorMessage }}
+  </div>
+
+  <!-- Dashboard statistiche -->
+  <div class="dashboard-stats" *ngIf="bookings.length > 0">
+    <div class="stat-card">
+      <div class="stat-number">{{ bookings.length }}</div>
+      <div class="stat-label">Totale Prenotazioni</div>
+    </div>
+    <div class="stat-card pending">
+      <div class="stat-number">{{ getBookingsByStatus().pending }}</div>
+      <div class="stat-label">In Attesa</div>
+    </div>
+    <div class="stat-card confirmed">
+      <div class="stat-number">{{ getBookingsByStatus().confirmed }}</div>
+      <div class="stat-label">Confermate</div>
+    </div>
+    <div class="stat-card cancelled">
+      <div class="stat-number">{{ getBookingsByStatus().cancelled }}</div>
+      <div class="stat-label">Annullate</div>
+    </div>
+  </div>
+
+  <!-- Quick info -->
+  <div class="quick-info" *ngIf="bookings.length > 0">
+    <div class="info-section">
+      <h3>📅 Oggi</h3>
+      <div class="today-bookings" *ngIf="getTodayBookings().length > 0; else noToday">
+        <div class="mini-booking" *ngFor="let booking of getTodayBookings()">
+          <span class="time">{{ booking.booking_time }}</span>
+          <span class="name">{{ booking.visitor_name }}</span>
+          <span class="area">{{ booking.booking_area }}</span>
+        </div>
+      </div>
+      <ng-template #noToday>
+        <p class="no-data">Nessuna prenotazione oggi</p>
+      </ng-template>
+    </div>
+
+    <div class="info-section">
+      <h3>🔜 Prossime Prenotazioni</h3>
+      <div class="upcoming-bookings" *ngIf="getUpcomingBookings().length > 0; else noUpcoming">
+        <div class="mini-booking" *ngFor="let booking of getUpcomingBookings()">
+          <span class="date">{{ formatDate(booking.booking_date).split(',')[0] }}</span>
+          <span class="time">{{ booking.booking_time }}</span>
+          <span class="name">{{ booking.visitor_name }}</span>
+        </div>
+      </div>
+      <ng-template #noUpcoming>
+        <p class="no-data">Nessuna prenotazione futura</p>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Filtri -->
+  <div class="filters-section">
+    <div class="filters-header">
+      <h2>🔍 Filtri</h2>
+      <div class="filter-actions">
+        <button class="btn-refresh" (click)="refreshData()" [disabled]="isLoading">
+          <span *ngIf="isLoading" class="spinner"></span>
+          🔄 Aggiorna
+        </button>
+        <button class="btn-clear" (click)="clearFilters()">
+          🗑️ Pulisci Filtri
+        </button>
+      </div>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label for="areaFilter">Area/Laboratorio:</label>
+        <select id="areaFilter" [(ngModel)]="selectedArea" (change)="applyFilters()">
+          <option value="">Tutte le aree</option>
+          <option *ngFor="let area of areas" [value]="area">{{ area }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="statusFilter">Status:</label>
+        <select id="statusFilter" [(ngModel)]="selectedStatus" (change)="applyFilters()">
+          <option value="">Tutti gli status</option>
+          <option value="pending">In Attesa</option>
+          <option value="confirmed">Confermata</option>
+          <option value="cancelled">Annullata</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="dateFilter">Data:</label>
+        <input type="date" id="dateFilter" [(ngModel)]="selectedDate" (change)="applyFilters()">
+      </div>
+    </div>
+
+    <div class="results-count" *ngIf="filteredBookings.length !== bookings.length">
+      Visualizzando {{ filteredBookings.length }} di {{ bookings.length }} prenotazioni
+    </div>
+  </div>
+
+  <!-- Lista prenotazioni -->
+  <div class="bookings-section">
+    <div class="section-header">
+      <h2>📋 Prenotazioni</h2>
+      <span class="count">{{ filteredBookings.length }} prenotazioni</span>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" *ngIf="isLoading">
+      <div class="spinner-large"></div>
+      <p>Caricamento prenotazioni dal database...</p>
+    </div>
+
+    <!-- Lista prenotazioni -->
+    <div class="bookings-grid" *ngIf="filteredBookings.length > 0 && !isLoading; else noBookings">
+      <div class="booking-card" *ngFor="let booking of filteredBookings">
+        <div class="booking-header">
+          <div class="booking-info">
+            <h3>{{ booking.visitor_name }}</h3>
+            <p class="booking-area">{{ booking.booking_area }}</p>
+          </div>
+          <span class="status-badge" [class]="getStatusClass(booking.status)">
+            {{ getStatusLabel(booking.status) }}
+          </span>
+        </div>
+
+        <div class="booking-details">
+          <div class="detail-section">
+            <div class="detail-row main-info">
+              <div class="detail-item">
+                <span class="icon">📅</span>
+                <div class="detail-content">
+                  <span class="label">Data</span>
+                  <span class="value">{{ formatDate(booking.booking_date) }}</span>
+                </div>
+              </div>
+              <div class="detail-item">
+                <span class="icon">🕐</span>
+                <div class="detail-content">
+                  <span class="label">Orario</span>
+                  <span class="value">{{ booking.booking_time }} - {{ calculateEndTime(booking.booking_time, booking.booking_duration) }}</span>
+                </div>
+              </div>
+              <div class="detail-item">
+                <span class="icon">⏱️</span>
+                <div class="detail-content">
+                  <span class="label">Durata</span>
+                  <span class="value">{{ formatDuration(booking.booking_duration) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-row contact-info">
+              <div class="detail-item">
+                <span class="icon">📧</span>
+                <div class="detail-content">
+                  <span class="label">Email</span>
+                  <span class="value">{{ booking.visitor_email }}</span>
+                </div>
+              </div>
+              <div class="detail-item">
+                <span class="icon">📱</span>
+                <div class="detail-content">
+                  <span class="label">Telefono</span>
+                  <span class="value">{{ booking.visitor_phone }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-row purpose-section">
+              <div class="detail-item full-width">
+                <span class="icon">📝</span>
+                <div class="detail-content">
+                  <span class="label">Scopo della Prenotazione</span>
+                  <span class="value purpose">{{ booking.booking_purpose }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-row meta-info">
+              <div class="detail-item">
+                <span class="icon">📅</span>
+                <div class="detail-content">
+                  <span class="label">Creata il</span>
+                  <span class="value created-at">{{ formatDateTime(booking.created_at) }}</span>
+                </div>
+              </div>
+              <div class="detail-item">
+                <span class="icon">#</span>
+                <div class="detail-content">
+                  <span class="label">ID Prenotazione</span>
+                  <span class="value">{{ booking.id }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nessuna prenotazione -->
+    <ng-template #noBookings>
+      <div class="no-bookings" *ngIf="!isLoading">
+        <div class="empty-state">
+          <div class="empty-icon">📅</div>
+          <h3>{{ filteredBookings.length === 0 && bookings.length > 0 ? 'Nessuna prenotazione trovata con i filtri attuali' : 'Nessuna prenotazione trovata' }}</h3>
+          <p *ngIf="filteredBookings.length === 0 && bookings.length > 0">
+            Prova a modificare i filtri per vedere più risultati
+          </p>
+          <p *ngIf="bookings.length === 0">
+            Il database non contiene ancora prenotazioni
+          </p>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>

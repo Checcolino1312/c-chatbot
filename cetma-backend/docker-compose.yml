@@ -16,14 +16,12 @@ services:
       - ./domain.yml:/app/domain.yml
       - ./credentials.yml:/app/credentials.yml
       - ./endpoints.yml:/app/endpoints.yml
-      # Directory per file esportati
       - ./exports:/app/exports
     depends_on:
       - action_server
     environment:
       - RASA_DUCKLING_HTTP_URL=http://duckling:8000
     restart: unless-stopped
-
 
   action_server:
     build:
@@ -34,7 +32,6 @@ services:
     ports:
       - "5055:5055"
     volumes:
-      # Solo volume essenziali
       - ./data_persistent:/app/data_persistent
       - ./exports:/app/exports
     environment:
@@ -42,7 +39,6 @@ services:
       - DATABASE_PATH=/app/data_persistent/cetma_bookings.db
       - PYTHONUNBUFFERED=1
     restart: unless-stopped
-    # Healthcheck per verificare che il container sia ready
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5055/health"]
       interval: 30s
@@ -50,3 +46,20 @@ services:
       retries: 3
       start_period: 40s
 
+  api_server:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: cetma-api-server
+    container_name: cetma-api-server
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./data_persistent:/app/data_persistent"
+    environment:
+      NODE_ENV: production
+      DATABASE_PATH: /app/data_persistent/cetma_bookings.db
+      PORT: 3000
+    depends_on:
+      - action_server
+    restart: unless-stopped
