@@ -2,25 +2,22 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { BookingEditModalComponent } from './booking-edit-modal.component';
+import { BookingDeleteModalComponent } from './booking-delete-modal.component';
+import { BookingService, Booking } from '../services/booking.service';
 
-interface Booking {
-  id: number;
-  visitor_name: string;
-  visitor_email: string;
-  visitor_phone: string;
-  booking_area: string;
-  booking_date: string;
-  booking_time: string;
-  booking_duration: number;
-  booking_purpose: string;
-  created_at: string;
-  status: 'pending' | 'confirmed' | 'cancelled';
-}
 
 @Component({
   selector: 'app-booking',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    ReactiveFormsModule,
+    BookingEditModalComponent,
+    BookingDeleteModalComponent
+  ],
   templateUrl: './booking.component.html',
   styleUrls: ['./booking.component.scss']
 })
@@ -35,6 +32,11 @@ export class BookingComponent implements OnInit {
   selectedStatus = '';
   selectedDate = '';
 
+  // Modal states
+  showEditModal = false;
+  showDeleteModal = false;
+  selectedBooking: Booking | null = null;
+
   // Opzioni per i filtri
   areas = [
     'Sala Angelo Marino',
@@ -42,62 +44,78 @@ export class BookingComponent implements OnInit {
     'Laboratorio',
     'Virtual Reality Center',
     'Sala Riunioni',
+    'Laboratorio Materiali Compositi',
+    'Centro R&D'
   ];
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private bookingService: BookingService
+  ) {}
 
   ngOnInit() {
     this.loadBookings();
   }
 
   async loadBookings() {
-  this.isLoading = true;
-  this.errorMessage = '';
-  
-  try {
-    console.log('🔄 Chiamando API...'); // Debug
-    const response = await this.http.get<any>('http://localhost:3000/api/bookings').toPromise();
-    console.log('✅ Risposta API completa:', response); // Debug
+    this.isLoading = true;
+    this.errorMessage = '';
     
-    // Il server restituisce { success: true, data: [...] }
-    // Quindi dobbiamo prendere response.data, non response direttamente
-    if (response && response.success && response.data) {
-      this.bookings = response.data;
-      console.log('📊 Prenotazioni caricate:', this.bookings); // Debug
-    } else {
-      console.log('⚠️ Nessuna prenotazione trovata');
-      this.bookings = [];
-    }
-    
-    this.filteredBookings = [...this.bookings];
-    
-  } catch (error) {
-    console.error('❌ Errore API:', error); // Debug
-    this.errorMessage = 'Errore nel caricamento delle prenotazioni dal database';
-    
-    // Dati di esempio per fallback
-    this.bookings = [
-      {
-        id: 1,
-        visitor_name: 'Mario Rossi',
-        visitor_email: 'mario.rossi@email.com',
-        visitor_phone: '+39 123 456 7890',
-        booking_area: 'Laboratorio Materiali Compositi',
-        booking_date: '25/07/2025',
-        booking_time: '10:00',
-        booking_duration: 120,
-        booking_purpose: 'Test di resistenza materiali per progetto automotive nel settore dei trasporti',
-        created_at: '2025-07-23T10:00:00Z',
-        status: 'confirmed'
+    try {
+      console.log('🔄 Chiamando API...');
+      const response = await this.bookingService.getAllBookings().toPromise();
+      console.log('✅ Risposta API completa:', response);
+      
+      if (response && response.success && response.data) {
+        this.bookings = response.data;
+        console.log('📊 Prenotazioni caricate:', this.bookings);
+      } else {
+        console.log('⚠️ Nessuna prenotazione trovata');
+        this.bookings = [];
       }
-      // ... altri dati esempio
-    ];
-    this.filteredBookings = [...this.bookings];
-  } finally {
-    this.isLoading = false;
+      
+      this.filteredBookings = [...this.bookings];
+      
+    } catch (error) {
+      console.error('❌ Errore API:', error);
+      this.errorMessage = 'Errore nel caricamento delle prenotazioni dal database';
+      
+      // Dati di esempio per fallback
+      this.bookings = [
+        {
+          id: 1,
+          visitor_name: 'Mario Rossi',
+          visitor_email: 'mario.rossi@email.com',
+          visitor_phone: '+39 123 456 7890',
+          booking_area: 'Laboratorio Materiali Compositi',
+          booking_date: '25/07/2025',
+          booking_time: '10:00',
+          booking_duration: '2 ore',
+          booking_purpose: 'Test di resistenza materiali per progetto automotive nel settore dei trasporti',
+          created_at: '2025-07-23T10:00:00Z',
+          status: 'confirmed'
+        },
+        {
+          id: 2,
+          visitor_name: 'Giulia Verdi',
+          visitor_email: 'giulia.verdi@email.com',
+          visitor_phone: '+39 987 654 3210',
+          booking_area: 'Virtual Reality Center',
+          booking_date: '26/07/2025',
+          booking_time: '14:30',
+          booking_duration: '3 ore',
+          booking_purpose: 'Sviluppo applicazione VR per training industriale',
+          created_at: '2025-07-23T11:30:00Z',
+          status: 'pending'
+        }
+      ];
+      this.filteredBookings = [...this.bookings];
+    } finally {
+      this.isLoading = false;
+    }
   }
-}
 
+  // Metodi per filtri (già esistenti)
   applyFilters() {
     this.filteredBookings = this.bookings.filter(booking => {
       const areaMatch = !this.selectedArea || booking.booking_area === this.selectedArea;
@@ -119,6 +137,64 @@ export class BookingComponent implements OnInit {
     this.loadBookings();
   }
 
+  // Nuovi metodi per CRUD
+  onEditBooking(booking: Booking) {
+    this.selectedBooking = booking;
+    this.showEditModal = true;
+  }
+
+  onDeleteBooking(booking: Booking) {
+    this.selectedBooking = booking;
+    this.showDeleteModal = true;
+  }
+
+  onBookingUpdated(updatedBooking: Booking) {
+    const index = this.bookings.findIndex(b => b.id === updatedBooking.id);
+    if (index !== -1) {
+      this.bookings[index] = updatedBooking;
+      this.applyFilters(); // Riapplica i filtri
+    }
+    this.showEditModal = false;
+    this.selectedBooking = null;
+  }
+
+  onBookingDeleted(bookingId: number) {
+    this.bookings = this.bookings.filter(b => b.id !== bookingId);
+    this.applyFilters(); // Riapplica i filtri
+    this.showDeleteModal = false;
+    this.selectedBooking = null;
+  }
+
+  onEditCancelled() {
+    this.showEditModal = false;
+    this.selectedBooking = null;
+  }
+
+  onDeleteCancelled() {
+    this.showDeleteModal = false;
+    this.selectedBooking = null;
+  }
+
+  // Metodo per aggiornamento rapido dello status
+  onQuickStatusChange(booking: Booking, newStatus: Booking['status']) {
+    this.bookingService.updateBookingStatus(booking.id, newStatus).subscribe({
+      next: (response) => {
+        if (response.success) {
+          const index = this.bookings.findIndex(b => b.id === booking.id);
+          if (index !== -1) {
+            this.bookings[index] = response.data;
+            this.applyFilters();
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Errore aggiornamento status:', error);
+        // Potresti mostrare un toast di errore qui
+      }
+    });
+  }
+
+  // Metodi helper (già esistenti)
   getStatusClass(status: string): string {
     switch (status) {
       case 'confirmed': return 'status-confirmed';
@@ -136,29 +212,26 @@ export class BookingComponent implements OnInit {
   }
 
   formatDate(dateString: string): string {
-  let date: Date;
+    let date: Date;
 
-  // Controlla se il formato è dd/mm/yyyy
-  if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
-    const [day, month, year] = dateString.split('/');
-    date = new Date(Number(year), Number(month) - 1, Number(day)); // mese parte da 0
-  } else {
-    // Usa il costruttore Date standard (ISO o altri formati validi)
-    date = new Date(dateString);
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+      const [day, month, year] = dateString.split('/');
+      date = new Date(Number(year), Number(month) - 1, Number(day));
+    } else {
+      date = new Date(dateString);
+    }
+
+    if (isNaN(date.getTime())) {
+      throw new Error(`Formato data non valido: ${dateString}`);
+    }
+
+    return date.toLocaleDateString('it-IT', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   }
-
-  // Controllo validità
-  if (isNaN(date.getTime())) {
-    throw new Error(`Formato data non valido: ${dateString}`);
-  }
-
-  return date.toLocaleDateString('it-IT', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-}
 
   formatDateTime(dateString: string): string {
     return new Date(dateString).toLocaleString('it-IT', {
@@ -171,9 +244,9 @@ export class BookingComponent implements OnInit {
     });
   }
 
- formatDuration(duration: string): string {
-  return duration; // Ritorna direttamente quello che c'è nel DB
-}
+  formatDuration(duration: string): string {
+    return duration;
+  }
 
   calculateEndTime(startTime: string, duration: number): string {
     const [hours, minutes] = startTime.split(':').map(Number);

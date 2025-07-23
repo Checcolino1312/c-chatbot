@@ -1,7 +1,9 @@
+
+
 <div class="booking-container">
   <header class="booking-header">
     <h1>Prenotazioni CETMA</h1>
-    <p>Visualizzazione prenotazioni laboratori e spazi di ricerca</p>
+    <p>Visualizzazione e gestione prenotazioni laboratori e spazi di ricerca</p>
   </header>
 
   <!-- Messaggio di errore -->
@@ -127,9 +129,27 @@
             <h3>{{ booking.visitor_name }}</h3>
             <p class="booking-area">{{ booking.booking_area }}</p>
           </div>
-          <span class="status-badge" [class]="getStatusClass(booking.status)">
-            {{ getStatusLabel(booking.status) }}
-          </span>
+          <div class="booking-actions">
+            <span class="status-badge" [class]="getStatusClass(booking.status)">
+              {{ getStatusLabel(booking.status) }}
+            </span>
+            <div class="action-buttons">
+              <button 
+                class="btn-edit" 
+                (click)="onEditBooking(booking)"
+                title="Modifica prenotazione"
+              >
+                ✏️
+              </button>
+              <button 
+                class="btn-delete" 
+                (click)="onDeleteBooking(booking)"
+                title="Elimina prenotazione"
+              >
+                🗑️
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="booking-details">
@@ -149,14 +169,13 @@
                   <span class="value">{{ booking.booking_time }}</span>
                 </div>
               </div>
-             <div class="detail-item">
-  <span class="icon">⏱️</span>
-  <div class="detail-content">
-    <span class="label">Durata</span>
-    <span class="value">{{ booking.booking_duration }}</span>
-  </div>
-</div>
-
+              <div class="detail-item">
+                <span class="icon">⏱️</span>
+                <div class="detail-content">
+                  <span class="label">Durata</span>
+                  <span class="value">{{ booking.booking_duration }}</span>
+                </div>
+              </div>
             </div>
 
             <div class="detail-row contact-info">
@@ -182,6 +201,39 @@
                 <div class="detail-content">
                   <span class="label">Scopo della Prenotazione</span>
                   <span class="value purpose">{{ booking.booking_purpose }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Status Change -->
+            <div class="detail-row status-section">
+              <div class="detail-item full-width">
+                <span class="icon">🔄</span>
+                <div class="detail-content">
+                  <span class="label">Cambia Status Rapido</span>
+                  <div class="status-buttons">
+                    <button 
+                      class="status-btn pending" 
+                      [class.active]="booking.status === 'pending'"
+                      (click)="onQuickStatusChange(booking, 'pending')"
+                    >
+                      In Attesa
+                    </button>
+                    <button 
+                      class="status-btn confirmed" 
+                      [class.active]="booking.status === 'confirmed'"
+                      (click)="onQuickStatusChange(booking, 'confirmed')"
+                    >
+                      Confermata
+                    </button>
+                    <button 
+                      class="status-btn cancelled" 
+                      [class.active]="booking.status === 'cancelled'"
+                      (click)="onQuickStatusChange(booking, 'cancelled')"
+                    >
+                      Annullata
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -223,4 +275,20 @@
       </div>
     </ng-template>
   </div>
+
+  <!-- Modali -->
+  <app-booking-edit-modal
+    [isVisible]="showEditModal"
+    [booking]="selectedBooking"
+    (bookingUpdated)="onBookingUpdated($event)"
+    (cancelled)="onEditCancelled()"
+  ></app-booking-edit-modal>
+
+  <app-booking-delete-modal
+    [isVisible]="showDeleteModal"
+    [booking]="selectedBooking"
+    (bookingDeleted)="onBookingDeleted($event)"
+    (cancelled)="onDeleteCancelled()"
+  ></app-booking-delete-modal>
 </div>
+
