@@ -1,4 +1,28 @@
 {
+  "action_deactivate_loop": {
+    "precision": 0.5,
+    "recall": 1.0,
+    "f1-score": 0.6666666666666666,
+    "support": 1
+  },
+  "utter_bot_function": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 1
+  },
+  "action_submit_cetma_booking": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 2
+  },
+  "utter_thank_you": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 1
+  },
   "utter_iamabot": {
     "precision": 1.0,
     "recall": 1.0,
@@ -11,37 +35,7 @@
     "f1-score": 1.0,
     "support": 1
   },
-  "utter_thank_you": {
-    "precision": 1.0,
-    "recall": 1.0,
-    "f1-score": 1.0,
-    "support": 1
-  },
-  "utter_goodbye": {
-    "precision": 1.0,
-    "recall": 1.0,
-    "f1-score": 1.0,
-    "support": 1
-  },
-  "action_submit_cetma_booking": {
-    "precision": 1.0,
-    "recall": 1.0,
-    "f1-score": 1.0,
-    "support": 2
-  },
-  "action_greet_user": {
-    "precision": 1.0,
-    "recall": 1.0,
-    "f1-score": 1.0,
-    "support": 6
-  },
   "utter_where_italo": {
-    "precision": 1.0,
-    "recall": 1.0,
-    "f1-score": 1.0,
-    "support": 1
-  },
-  "utter_bot_function": {
     "precision": 1.0,
     "recall": 1.0,
     "f1-score": 1.0,
@@ -53,17 +47,17 @@
     "f1-score": 1.0,
     "support": 1
   },
-  "action_help_booking": {
-    "precision": 1.0,
-    "recall": 1.0,
-    "f1-score": 1.0,
-    "support": 5
-  },
-  "utter_delivery_info": {
+  "utter_goodbye": {
     "precision": 1.0,
     "recall": 1.0,
     "f1-score": 1.0,
     "support": 1
+  },
+  "action_show_available_areas": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 4
   },
   "action_out_of_scope": {
     "precision": 1.0,
@@ -71,11 +65,17 @@
     "f1-score": 1.0,
     "support": 5
   },
-  "action_deactivate_loop": {
-    "precision": 0.5,
+  "action_greet_user": {
+    "precision": 1.0,
     "recall": 1.0,
-    "f1-score": 0.6666666666666666,
-    "support": 1
+    "f1-score": 1.0,
+    "support": 6
+  },
+  "utter_where_department": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 2
   },
   "cetma_booking_form": {
     "precision": 1.0,
@@ -89,17 +89,17 @@
     "f1-score": 1.0,
     "support": 2
   },
-  "utter_where_department": {
+  "action_help_booking": {
     "precision": 1.0,
     "recall": 1.0,
     "f1-score": 1.0,
-    "support": 2
+    "support": 5
   },
-  "action_show_available_areas": {
+  "utter_delivery_info": {
     "precision": 1.0,
     "recall": 1.0,
     "f1-score": 1.0,
-    "support": 4
+    "support": 1
   },
   "action_listen": {
     "precision": 1.0,
