@@ -37,12 +37,11 @@ export class BookingComponent implements OnInit {
 
   // Opzioni per i filtri
   areas = [
-    'Laboratorio Materiali Compositi',
-    'Sala Riunioni A',
-    'Sala Riunioni B',
-    'Laboratorio VR/AR',
-    'Ufficio Design',
-    'Spazio Coworking'
+    'Sala Angelo Marino',
+    'Dipartimento NED',
+    'Laboratorio',
+    'Virtual Reality Center',
+    'Sala Riunioni',
   ];
 
   constructor(private http: HttpClient) {}
@@ -84,7 +83,7 @@ export class BookingComponent implements OnInit {
         visitor_email: 'mario.rossi@email.com',
         visitor_phone: '+39 123 456 7890',
         booking_area: 'Laboratorio Materiali Compositi',
-        booking_date: '2025-07-25',
+        booking_date: '25/07/2025',
         booking_time: '10:00',
         booking_duration: 120,
         booking_purpose: 'Test di resistenza materiali per progetto automotive nel settore dei trasporti',
@@ -137,13 +136,29 @@ export class BookingComponent implements OnInit {
   }
 
   formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('it-IT', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+  let date: Date;
+
+  // Controlla se il formato è dd/mm/yyyy
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+    const [day, month, year] = dateString.split('/');
+    date = new Date(Number(year), Number(month) - 1, Number(day)); // mese parte da 0
+  } else {
+    // Usa il costruttore Date standard (ISO o altri formati validi)
+    date = new Date(dateString);
   }
+
+  // Controllo validità
+  if (isNaN(date.getTime())) {
+    throw new Error(`Formato data non valido: ${dateString}`);
+  }
+
+  return date.toLocaleDateString('it-IT', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
 
   formatDateTime(dateString: string): string {
     return new Date(dateString).toLocaleString('it-IT', {
@@ -156,19 +171,9 @@ export class BookingComponent implements OnInit {
     });
   }
 
-  formatDuration(minutes: number): string {
-    if (minutes < 60) {
-      return `${minutes} minuti`;
-    } else {
-      const hours = Math.floor(minutes / 60);
-      const remainingMinutes = minutes % 60;
-      if (remainingMinutes === 0) {
-        return `${hours} ${hours === 1 ? 'ora' : 'ore'}`;
-      } else {
-        return `${hours}h ${remainingMinutes}m`;
-      }
-    }
-  }
+ formatDuration(duration: string): string {
+  return duration; // Ritorna direttamente quello che c'è nel DB
+}
 
   calculateEndTime(startTime: string, duration: number): string {
     const [hours, minutes] = startTime.split(':').map(Number);

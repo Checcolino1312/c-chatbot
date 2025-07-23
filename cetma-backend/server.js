@@ -101,7 +101,7 @@ app.get('/api/bookings', (req, res) => {
     } else {
       // Se è richiesta la paginazione, ottieni anche il conteggio totale
       if (req.query.page || req.query.limit) {
-        let countQuery = 'SELECT COUNT(*) as total FROM bookings';
+        let countQuery = 'SELECT COUNT(*) as total FROM cetma_bookings';
         if (conditions.length > 0) {
           countQuery += ' WHERE ' + conditions.join(' AND ');
         }
@@ -137,7 +137,7 @@ app.get('/api/bookings/:id', (req, res) => {
     return sendResponse(res, false, null, '', 'ID non valido');
   }
 
-  db.get('SELECT * FROM bookings WHERE id = ?', [id], (err, row) => {
+  db.get('SELECT * FROM cetma_bookings WHERE id = ?', [id], (err, row) => {
     if (err) {
       console.error('Errore recupero prenotazione:', err.message);
       sendResponse(res, false, null, '', 'Errore nel recupero della prenotazione');
@@ -159,7 +159,7 @@ app.get('/api/bookings/stats/summary', (req, res) => {
       COUNT(CASE WHEN status = 'cancelled' THEN 1 END) as cancelled,
       COUNT(CASE WHEN booking_date = date('now') THEN 1 END) as today,
       COUNT(CASE WHEN booking_date > date('now') AND status != 'cancelled' THEN 1 END) as upcoming
-    FROM bookings
+    FROM cetma_bookings
   `;
 
   db.get(statsQuery, [], (err, stats) => {
@@ -181,7 +181,7 @@ app.get('/api/bookings/stats/by-area', (req, res) => {
       COUNT(CASE WHEN status = 'confirmed' THEN 1 END) as confirmed,
       COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending,
       COUNT(CASE WHEN status = 'cancelled' THEN 1 END) as cancelled
-    FROM bookings
+    FROM cetma_bookings
     GROUP BY booking_area
     ORDER BY total DESC
   `;
@@ -199,7 +199,7 @@ app.get('/api/bookings/stats/by-area', (req, res) => {
 // GET /api/bookings/today - Prenotazioni di oggi
 app.get('/api/bookings/today', (req, res) => {
   const todayQuery = `
-    SELECT * FROM bookings 
+    SELECT * FROM cetma_bookings 
     WHERE booking_date = date('now')
     ORDER BY booking_time ASC
   `;
@@ -219,7 +219,7 @@ app.get('/api/bookings/upcoming', (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   
   const upcomingQuery = `
-    SELECT * FROM bookings 
+    SELECT * FROM cetma_bookings 
     WHERE booking_date > date('now') AND status != 'cancelled'
     ORDER BY booking_date ASC, booking_time ASC
     LIMIT ?
@@ -244,7 +244,7 @@ app.get('/api/bookings/search', (req, res) => {
   }
 
   const searchQuery = `
-    SELECT * FROM bookings 
+    SELECT * FROM cetma_bookings 
     WHERE visitor_name LIKE ? 
        OR visitor_email LIKE ? 
        OR booking_purpose LIKE ?
@@ -281,7 +281,7 @@ app.get('/api/bookings/range/:start/:end', (req, res) => {
   }
 
   const rangeQuery = `
-    SELECT * FROM bookings 
+    SELECT * FROM cetma_bookings 
     WHERE booking_date BETWEEN ? AND ?
     ORDER BY booking_date ASC, booking_time ASC
   `;
@@ -300,7 +300,7 @@ app.get('/api/bookings/range/:start/:end', (req, res) => {
 app.get('/api/areas', (req, res) => {
   const areasQuery = `
     SELECT DISTINCT booking_area, COUNT(*) as booking_count
-    FROM bookings 
+    FROM cetma_bookings 
     GROUP BY booking_area 
     ORDER BY booking_count DESC
   `;

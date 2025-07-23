@@ -146,16 +146,17 @@
                 <span class="icon">🕐</span>
                 <div class="detail-content">
                   <span class="label">Orario</span>
-                  <span class="value">{{ booking.booking_time }} - {{ calculateEndTime(booking.booking_time, booking.booking_duration) }}</span>
+                  <span class="value">{{ booking.booking_time }}</span>
                 </div>
               </div>
-              <div class="detail-item">
-                <span class="icon">⏱️</span>
-                <div class="detail-content">
-                  <span class="label">Durata</span>
-                  <span class="value">{{ formatDuration(booking.booking_duration) }}</span>
-                </div>
-              </div>
+             <div class="detail-item">
+  <span class="icon">⏱️</span>
+  <div class="detail-content">
+    <span class="label">Durata</span>
+    <span class="value">{{ booking.booking_duration }}</span>
+  </div>
+</div>
+
             </div>
 
             <div class="detail-row contact-info">
