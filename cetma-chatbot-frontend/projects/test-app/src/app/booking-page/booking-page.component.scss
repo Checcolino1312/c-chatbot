@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap');
+
+.booking-page-wrapper {
+  font-family: 'Montserrat', sans-serif;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  color: #333333;
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .logo img {
+    max-width: 150px;
+  }
+
+  .navbar {
+    display: flex;
+    gap: 1.5rem;
+
+    a {
+      color: #2A4C92;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: color 0.3s ease;
+
+      &:hover,
+      &.active {
+        color: #ff9900;
+      }
+    }
+  }
+}
+
+.page-content {
+  padding: 0;
+}
+
+// Responsività per la navbar
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+    
+    .navbar {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+  }
+}

@@ -4,10 +4,8 @@
       <img src="cetma-logo.png" alt="CETMA Logo" />
     </div>
     <nav class="navbar">
-      <a href="#chi-siamo">Chi siamo</a>
-      <a href="#competenze">Competenze</a>
       <a routerLink="/prenotazioni">Prenotazioni</a>
-      <a href="#contatti">Contatti</a>
+
     </nav>
   </header>
   
@@ -25,7 +23,7 @@
       <br> Innovazione
       per il futuro.
     </p>
-    <a routerLink="/prenotazioni" class="cta-button">Vai alle Prenotazioni</a>
+    
   </section>
 
   <section id="chi-siamo" class="section about">
@@ -71,9 +69,6 @@
       </div>
     </div>
   </section>
-
-  <!-- Router outlet per le pagine -->
-  <router-outlet></router-outlet>
 
   <!-- Chatbot -->
   <lib-chatbot position="bottom-right" [floatingButton]="true" initialState="closed"></lib-chatbot>
