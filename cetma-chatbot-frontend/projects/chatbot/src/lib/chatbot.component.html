@@ -1,0 +1,58 @@
+<div class="chatbot-container" [class.chatbot-container--bottom-right]="position === 'bottom-right'">
+    <div class="chat-window" *ngIf="isChatOpen" [@chatAnimation]>
+        <button class="close-button" (click)="toggleChat()">×</button>
+        <div class="chat-header">
+            <div class="bot-info">
+                <div class="bot-avatar">🤖</div>
+                <span class="bot-name">CETMA Assistant</span>
+                <div *ngIf="isOnline" class="status-indicator online">Online</div>
+                <div *ngIf="!isOnline" class="status-indicator offline">Offline</div>
+            </div>
+        </div>
+        <div class="chat-messages" #messageContainer>
+            <div class="messages-wrapper">
+                <div *ngFor="let msg of messages" [@messageAnimation] class="message-bubble"
+                    [class.user-message]="msg.sender === 'user'" [class.bot-message]="msg.sender === 'bot'">
+                    <div class="message-content">
+                        <ng-container *ngIf="!msg.isImage">
+                            <div class="message-text">{{ msg.text }}</div>
+                        </ng-container>
+
+                        <ng-container *ngIf="msg.isImage">
+                            <div class="image-container">
+                                <img [src]="msg.imageUrl" alt="Immagine chat" class="chat-image"
+                                    (error)="onImageError(msg.text)" (load)="onImageLoad(msg.text)">
+                            </div>
+                        </ng-container>
+
+                        <div class="message-time">{{ msg.timestamp | date:'shortTime' }}</div>
+                    </div>
+                </div>
+                <div *ngIf="isTyping" [@messageAnimation] class="message-bubble bot-message typing-indicator">
+                    <div class="dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="chat-input">
+            <div class="input-wrapper">
+                <input [(ngModel)]="userMessage" (keyup.enter)="sendMessage()"
+                    [placeholder]="isTyping ? 'Bot sta scrivendo...' : 'Scrivi un messaggio...'" [disabled]="isTyping"
+                    #messageInput />
+                <button (click)="sendMessage()" [disabled]="!userMessage.trim() || isTyping" class="send-button">
+                    <span class="send-icon">➤</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <button *ngIf="floatingButton && !isChatOpen" class="chat-float-button" [@chatAnimation] (click)="toggleChat()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+    </button>
+</div>
