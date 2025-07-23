@@ -266,17 +266,39 @@ export class BookingComponent implements OnInit {
     };
   }
 
-  getTodayBookings(): Booking[] {
-    const today = new Date().toISOString().split('T')[0];
-    return this.bookings.filter(b => b.booking_date === today);
-  }
+getTodayBookings(): Booking[] {
+  const today = new Date();
+  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const year = today.getFullYear();
+  
+  const todayStr = `${day}/${month}/${year}`; // formato gg/mm/aaaa
 
-  getUpcomingBookings(): Booking[] {
-    const today = new Date().toISOString().split('T')[0];
-    return this.bookings
-      .filter(b => b.booking_date > today && b.status !== 'cancelled')
-      .sort((a, b) => new Date(a.booking_date + 'T' + a.booking_time).getTime() - 
-                     new Date(b.booking_date + 'T' + b.booking_time).getTime())
-      .slice(0, 5);
-  }
+  return this.bookings.filter(b => b.booking_date === todayStr);
+}
+
+
+getUpcomingBookings(): Booking[] {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Normalizzo a mezzanotte
+
+  return this.bookings
+    .filter(b => {
+      const [day, month, year] = b.booking_date.split('/').map(Number);
+      const bookingDate = new Date(year, month - 1, day);
+
+      return bookingDate > today && b.status !== 'cancelled';
+    })
+    .sort((a, b) => {
+      const [dayA, monthA, yearA] = a.booking_date.split('/').map(Number);
+      const [dayB, monthB, yearB] = b.booking_date.split('/').map(Number);
+
+      const dateA = new Date(yearA, monthA - 1, dayA, ...a.booking_time.split(':').map(Number));
+      const dateB = new Date(yearB, monthB - 1, dayB, ...b.booking_time.split(':').map(Number));
+
+      return dateA.getTime() - dateB.getTime();
+    })
+    .slice(0, 5);
+}
+
 }
