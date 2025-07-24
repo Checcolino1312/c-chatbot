@@ -116,15 +116,27 @@ export class BookingComponent implements OnInit {
   }
 
   // Metodi per filtri (già esistenti)
-  applyFilters() {
-    this.filteredBookings = this.bookings.filter(booking => {
-      const areaMatch = !this.selectedArea || booking.booking_area === this.selectedArea;
-      const statusMatch = !this.selectedStatus || booking.status === this.selectedStatus;
-      const dateMatch = !this.selectedDate || booking.booking_date === this.selectedDate;
-      
-      return areaMatch && statusMatch && dateMatch;
-    });
-  }
+applyFilters() {
+  this.filteredBookings = this.bookings.filter(booking => {
+    const areaMatch = !this.selectedArea || booking.booking_area === this.selectedArea;
+    const statusMatch = !this.selectedStatus || booking.status === this.selectedStatus;
+
+    let dateMatch = true;
+    if (this.selectedDate) {
+      const bookingDate = this.toISODate(booking.booking_date); // converte gg/mm/aaaa -> aaaa-mm-gg
+      dateMatch = bookingDate === this.selectedDate;
+    }
+
+    return areaMatch && statusMatch && dateMatch;
+  });
+}
+
+private toISODate(dateStr: string): string {
+  // converte '25/07/2025' in '2025-07-25'
+  const [day, month, year] = dateStr.split('/');
+  return `${year}-${month}-${day}`;
+}
+
 
   clearFilters() {
     this.selectedArea = '';
