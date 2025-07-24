@@ -8,7 +8,7 @@
 
   <!-- Messaggio di errore -->
   <div class="error-message" *ngIf="errorMessage">
-    <i class="icon">⚠️</i>
+    <i class="icon"></i>
     {{ errorMessage }}
   </div>
 
@@ -35,7 +35,7 @@
   <!-- Quick info -->
   <div class="quick-info" *ngIf="bookings.length > 0">
     <div class="info-section">
-      <h3>📅 Oggi</h3>
+      <h3>Oggi</h3>
       <div class="today-bookings" *ngIf="getTodayBookings().length > 0; else noToday">
         <div class="mini-booking" *ngFor="let booking of getTodayBookings()">
           <span class="time">{{ booking.booking_time }}</span>
@@ -49,7 +49,7 @@
     </div>
 
     <div class="info-section">
-      <h3>🔜 Prossime Prenotazioni</h3>
+      <h3>Prossime Prenotazioni</h3>
       <div class="upcoming-bookings" *ngIf="getUpcomingBookings().length > 0; else noUpcoming">
         <div class="mini-booking" *ngFor="let booking of getUpcomingBookings()">
           <span class="date">{{ formatDate(booking.booking_date).split(',')[0] }}</span>
@@ -66,14 +66,14 @@
   <!-- Filtri -->
   <div class="filters-section">
     <div class="filters-header">
-      <h2>🔍 Filtri</h2>
+      <h2>Filtri</h2>
       <div class="filter-actions">
         <button class="btn-refresh" (click)="refreshData()" [disabled]="isLoading">
           <span *ngIf="isLoading" class="spinner"></span>
-          🔄 Aggiorna
+          Aggiorna
         </button>
         <button class="btn-clear" (click)="clearFilters()">
-          🗑️ Pulisci Filtri
+          Pulisci Filtri
         </button>
       </div>
     </div>
@@ -111,7 +111,7 @@
   <!-- Lista prenotazioni -->
   <div class="bookings-section">
     <div class="section-header">
-      <h2>📋 Prenotazioni</h2>
+      <h2>Prenotazioni</h2>
       <span class="count">{{ filteredBookings.length }} prenotazioni</span>
     </div>
 
@@ -139,14 +139,14 @@
                 (click)="onEditBooking(booking)"
                 title="Modifica prenotazione"
               >
-                ✏️
+                Modifica
               </button>
               <button 
                 class="btn-delete" 
                 (click)="onDeleteBooking(booking)"
                 title="Elimina prenotazione"
               >
-                🗑️
+                Elimina
               </button>
             </div>
           </div>
@@ -156,21 +156,21 @@
           <div class="detail-section">
             <div class="detail-row main-info">
               <div class="detail-item">
-                <span class="icon">📅</span>
+                <span class="icon"></span>
                 <div class="detail-content">
                   <span class="label">Data</span>
                   <span class="value">{{ formatDate(booking.booking_date) }}</span>
                 </div>
               </div>
               <div class="detail-item">
-                <span class="icon">🕐</span>
+                <span class="icon"></span>
                 <div class="detail-content">
                   <span class="label">Orario</span>
                   <span class="value">{{ booking.booking_time }}</span>
                 </div>
               </div>
               <div class="detail-item">
-                <span class="icon">⏱️</span>
+                <span class="icon"></span>
                 <div class="detail-content">
                   <span class="label">Durata</span>
                   <span class="value">{{ booking.booking_duration }}</span>
@@ -180,14 +180,14 @@
 
             <div class="detail-row contact-info">
               <div class="detail-item">
-                <span class="icon">📧</span>
+                <span class="icon"></span>
                 <div class="detail-content">
                   <span class="label">Email</span>
                   <span class="value">{{ booking.visitor_email }}</span>
                 </div>
               </div>
               <div class="detail-item">
-                <span class="icon">📱</span>
+                <span class="icon"></span>
                 <div class="detail-content">
                   <span class="label">Telefono</span>
                   <span class="value">{{ booking.visitor_phone }}</span>
@@ -197,7 +197,7 @@
 
             <div class="detail-row purpose-section">
               <div class="detail-item full-width">
-                <span class="icon">📝</span>
+                <span class="icon"></span>
                 <div class="detail-content">
                   <span class="label">Scopo della Prenotazione</span>
                   <span class="value purpose">{{ booking.booking_purpose }}</span>
@@ -208,7 +208,7 @@
             <!-- Quick Status Change -->
             <div class="detail-row status-section">
               <div class="detail-item full-width">
-                <span class="icon">🔄</span>
+                <span class="icon"></span>
                 <div class="detail-content">
                   <span class="label">Cambia Status Rapido</span>
                   <div class="status-buttons">
@@ -240,7 +240,7 @@
 
             <div class="detail-row meta-info">
               <div class="detail-item">
-                <span class="icon">📅</span>
+                <span class="icon"></span>
                 <div class="detail-content">
                   <span class="label">Creata il</span>
                   <span class="value created-at">{{ formatDateTime(booking.created_at) }}</span>
@@ -263,7 +263,7 @@
     <ng-template #noBookings>
       <div class="no-bookings" *ngIf="!isLoading">
         <div class="empty-state">
-          <div class="empty-icon">📅</div>
+          <div class="empty-icon"></div>
           <h3>{{ filteredBookings.length === 0 && bookings.length > 0 ? 'Nessuna prenotazione trovata con i filtri attuali' : 'Nessuna prenotazione trovata' }}</h3>
           <p *ngIf="filteredBookings.length === 0 && bookings.length > 0">
             Prova a modificare i filtri per vedere più risultati
