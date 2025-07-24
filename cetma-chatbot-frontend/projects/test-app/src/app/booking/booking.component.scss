@@ -559,3 +559,74 @@
     text-align: center;
   }
 }
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+
+  .btn-edit, .btn-delete {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  .btn-edit {
+    background: #3b82f6;
+    color: white;
+    &:hover { background: #2563eb; }
+  }
+
+  .btn-delete {
+    background: #ef4444;
+    color: white;
+    &:hover { background: #dc2626; }
+  }
+}
+
+.status-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+
+  .status-btn {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    background: white;
+    color: #666;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+
+    &.active {
+      font-weight: 600;
+      border-width: 2px;
+    }
+
+    &.pending.active {
+      background: #fef3c7;
+      color: #d97706;
+      border-color: #d97706;
+    }
+
+    &.confirmed.active {
+      background: #d1fae5;
+      color: #059669;
+      border-color: #059669;
+    }
+
+    &.cancelled.active {
+      background: #fee2e2;
+      color: #dc2626;
+      border-color: #dc2626;
+    }
+  }
+}
